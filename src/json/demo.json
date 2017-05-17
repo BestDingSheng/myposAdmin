@@ -1,0 +1,33 @@
+{
+  "code": "0",
+  "data": {
+    "msg": "操作成功！",
+    "success": true,
+    "result": [{
+        "filmId": "1",
+        "platGroupNo": "23423",
+        "plats": "ios",
+        "enable": "1"
+      },
+      {
+        "filmId": "2",
+        "platGroupNo": "23423",
+        "plats": "ios",
+        "enable": "1"
+      },
+      {
+        "filmId": "3",
+        "platGroupNo": "23asdsads423",
+        "plats": "io2323s",
+        "enable": "2"
+      }
+    ]
+  },
+  "imgUrl": "/src/assets/images/img.gif",
+  "userInfo": {
+    "loginName": "张三",
+    "userName": "张三",
+    "ip": "127.0.0.1",
+    "loginTime": "2017-01-12  10:40:08"
+  }
+}
