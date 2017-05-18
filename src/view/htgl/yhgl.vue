@@ -1,3 +1,4 @@
+<!--  后台管理>用户管理 -->
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
@@ -545,9 +546,6 @@
             this.handleSearch();
             this.loadProvinceData();
             this.userList();
-        },
-        updated(){
-            console.log(this.add);
         },
         computed: {
 

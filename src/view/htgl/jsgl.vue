@@ -1,3 +1,4 @@
+<!--  后台管理>角色管理 -->
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
@@ -28,9 +29,13 @@
                 </el-table-column>
                 <el-table-column prop="id" label="ID">
                 </el-table-column>
-                <el-table-column prop="rolename" label="角色名称" width=''>
+                <el-table-column prop="rolename" label="角色名称" width='120px'>
                 </el-table-column>
-                <el-table-column prop="remark" label="说明" width="">
+                <el-table-column prop="remark" label="说明" width="140px">
+                </el-table-column>
+                <el-table-column prop="createdtime" label="创建时间" width="180px">
+                </el-table-column>
+                <el-table-column prop="editedtime" label="修改时间" width="180px">
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="200">
                     <span>

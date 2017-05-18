@@ -1,3 +1,4 @@
+<!--  业务管理>定向业务发布 -->
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
@@ -50,13 +51,14 @@
                 <el-table-column type="index" label="序号" width="80">
                 </el-table-column>
                 <el-table-column prop="idx" label="栏位" width="80"></el-table-column>
-                <el-table-column prop="directbusno.title" label="标题" width="120"></el-table-column>
-                <el-table-column prop="objname" label="对象" width="120"></el-table-column>
-                <el-table-column prop="platgroupno" label="平台" width="120">
+                <el-table-column prop="directbusno.title" label="标题" width="140"></el-table-column>
+                <el-table-column prop="objectno.objname" label="对象" width="120"></el-table-column>
+                
+                 <el-table-column prop="pvgroupno.pvs" label="渠道" width="120">
                 </el-table-column>
-                <el-table-column prop="vers" label="版本" width="140">
+                <el-table-column prop="vergroupno.vers" label="版本" width="100">
                 </el-table-column>
-                <el-table-column prop="pvgroupno" label="渠道" width="140">
+               <el-table-column prop="platgroupno.plats" label="平台" width="120">
                 </el-table-column>
                 <el-table-column prop="auditStatusName" label="状态" width="100" sortable>
                     <template scope="scope">
@@ -64,7 +66,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="audittime" label="状态时间" width="180">
+                <el-table-column prop="updatetime" label="状态时间" width="180">
                 </el-table-column>
 
                 <el-table-column inline-template prop='enable' fixed="right" label="维护" width="140px">
@@ -90,34 +92,35 @@
         <!--新建-->
         <el-dialog title="新建" v-model="dialogAdd" :close-on-click-modal='false' custom-class="dialogAdd" size="tiny">
             <el-form :rules="addRules" label-width="100px" :model="addForm" ref="addForm">
-                <el-form-item label="栏位" prop="idx">
+                <el-form-item label="发布栏位" prop="idx">
                     <el-select v-model="addForm.idx" placeholder="请选择">
                         <el-option v-for="item in weizhi" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="选择业务" prop="title">
+                <el-form-item label="业务选择" prop="title">
                     <el-input placeholder="请选择业务" v-model="addForm.title">
                         <template slot="append">
                             <el-button type="primary" @click='getCurIndex'>选择</el-button>
                         </template>
                     </el-input>
                 </el-form-item>
-                <el-form-item label="版本组编号" prop="vergroupno">
-                    <el-select v-model="addForm.vergroupno" placeholder="请选择">
-                        <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="对象组编号" prop="objectno">
+                <el-form-item label="发布对象" prop="objectno">
                     <el-select v-model="addForm.objectno" placeholder="请选择">
                         <el-option v-for="item in objectno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="平台组编号" prop="platgroupno">
+                <el-form-item label="版本选择" prop="vergroupno">
+                    <el-select v-model="addForm.vergroupno" placeholder="请选择">
+                        <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                
+                <el-form-item label="平台选择" prop="platgroupno">
                     <el-select v-model="addForm.platgroupno" placeholder="请选择">
                         <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="渠道组编号" prop="pvgroupno">
+                <el-form-item label="渠道选择" prop="pvgroupno">
                     <el-select v-model="addForm.pvgroupno" placeholder="请选择">
                         <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>

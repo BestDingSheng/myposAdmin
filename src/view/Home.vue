@@ -129,6 +129,9 @@
         computed() {
 
         },
+        created(){
+           // alert(111);
+        },//
         mounted() {
             //页面挂在完成之后加载首页内容
             var vm = this;

@@ -1,3 +1,4 @@
+<!--  业务管理>定向业务规则管理 -->
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
@@ -501,11 +502,13 @@
             },
             updateFn() { //修改
                 var vm = this;
+                let idxs ;
                 for (var i = 0; i < this.textarry.length; i++) {
                     if (i == 0) {
                         continue
                     } else {
                         vm.addForm.directbusno.push(vm.textarry[i].bianhao)
+                        idxs = vm.textarry[i].text
                     }
                 };
                 if (vm.addForm.directbusno == '') {
@@ -515,7 +518,7 @@
                 axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
                     ruleid: vm.editForm.ruleid,
                     directbusno: vm.addForm.directbusno,
-                    
+                    idxs:idxs,                                  
                     enable: '1'
                 })).then(function (res) {
                     vm.dialogEdit = false;

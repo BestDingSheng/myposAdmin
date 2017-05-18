@@ -218,6 +218,7 @@
         },
         created() {
             this.$store.commit('setUserName', localStorage.username);
+            this.$store.dispatch('LOAD',true);
         },
         computed:{
             roleName(){

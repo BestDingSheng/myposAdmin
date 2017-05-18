@@ -3,17 +3,27 @@ import VueRouter from 'vue-router'
 import Index from './view/Index.vue'
 import Login from './view/Login.vue'
 import Home from './view/Home.vue'
-import ShtDxwh from './view/sht/ShtDxwh.vue'
-import ShtXxmb from './view/sht/ShtXxmb.vue'
-import ShtXxfb from './view/sht/ShtXxfb.vue'
-import ShtXxfbNew from './view/sht/ShtXxfbNew.vue'
-import ShtGgfb from './view/sht/ShtGgfb.vue'
-import ShtYwfb from './view/sht/ShtYwfb.vue'
-import SkbDxwh from './view/skb/SkbDxwh.vue'
-import SkbXxmb from './view/skb/SkbXxmb.vue'
-import SkbXxfb from './view/skb/SkbXxfb.vue'
-import SkbXxfbNew from './view/skb/SkbXxfbNew.vue'
-import SkbPtgl from './view/skb/SkbPtgl.vue' 
+
+// import ShtDxwh from './view/sht/ShtDxwh.vue'
+// import ShtXxmb from './view/sht/ShtXxmb.vue'
+// import ShtXxfb from './view/sht/ShtXxfb.vue'
+// import ShtXxfbNew from './view/sht/ShtXxfbNew.vue'
+// import ShtGgfb from './view/sht/ShtGgfb.vue'
+// import ShtYwfb from './view/sht/ShtYwfb.vue'
+// import SkbDxwh from './view/skb/SkbDxwh.vue'
+// import SkbXxmb from './view/skb/SkbXxmb.vue'
+// import SkbXxfb from './view/skb/SkbXxfb.vue'
+// import SkbXxfbNew from './view/skb/SkbXxfbNew.vue'
+// import SkbPtgl from './view/skb/SkbPtgl.vue' 
+
+// import SkbPzgxts from './view/skb/SkbPzgxts.vue'
+// import SkbGgfb from './view/skb/SkbGgfb.vue'
+// import SkbGgywfb from './view/skb/SkbGgywfb.vue'
+// import SkbDxywfb from './view/skb/SkbDxywfb.vue'
+// import SkbDxywfbNew from './view/skb/SkbDxywfbNew.vue'
+// import SkbHdgl from './view/skb/SkbHdgl.vue'
+// import SkbYhlbcx from './view/skb/SkbYhlbcx.vue'
+// import SkbYhksh from './view/skb/SkbYhksh.vue'
 
 import ptgl from './view/ywgl/ptgl.vue'
 import qdgl from './view/ywgl/qdgl.vue'
@@ -24,17 +34,6 @@ import dxywfb from './view/ywgl/dxywfb.vue'
 import dxywglgz from './view/ywgl/dxywgzgl.vue'
 import dxgl from './view/ywgl/dxgl.vue'
 import sjzdgl from './view/ywgl/sjzdgl.vue'
-
-
-
-import SkbPzgxts from './view/skb/SkbPzgxts.vue'
-import SkbGgfb from './view/skb/SkbGgfb.vue'
-import SkbGgywfb from './view/skb/SkbGgywfb.vue'
-import SkbDxywfb from './view/skb/SkbDxywfb.vue'
-import SkbDxywfbNew from './view/skb/SkbDxywfbNew.vue'
-import SkbHdgl from './view/skb/SkbHdgl.vue'
-import SkbYhlbcx from './view/skb/SkbYhlbcx.vue'
-import SkbYhksh from './view/skb/SkbYhksh.vue'
 
 import jsgl from './view/htgl/jsgl.vue' 
 import yhgl from './view/htgl/yhgl.vue'
@@ -48,44 +47,10 @@ const routes = [{
     name: '首页',
     path: '',
     component: Home
-  }, {
-    name: '对象维护',
-    path: '/sht/dxwh',
-    component: ShtDxwh
-  }, {
-    name: '消息模板',
-    path: '/sht/xxmb',
-    component: ShtXxmb
-  }, {
-    name: '消息发布',
-    path: '/sht/xxfb',
-    component: ShtXxfb
-  }, {
-    name: '消息发布新版',
-    path: '/sht/xxfbnew',
-    component: ShtXxfbNew
-  }, {
-    name: '广告发布',
-    path: '/sht/ggfb',
-    component: ShtGgfb
-  }, {
-    name: '业务发布',
-    path: '/sht/ywfb',
-    component: ShtYwfb
   }, 
+  
+  
   {
-    name: '公共业务发布',
-    path: '/skb/ggywfb',
-    component: SkbGgywfb
-  }, {
-    name: '定向业务发布',
-    path: '/skb/dxywfb',
-    component: SkbDxywfb
-  }, {
-    name: '定向业务发布新版',
-    path: '/skb/dxywfbnew',
-    component: SkbDxywfbNew
-  }, {
     name: '平台管理',
     path: '/ywgl/ptgl',
     component: ptgl
@@ -142,19 +107,6 @@ const routes = [{
     component: cdgl
   },
 
-  {
-    name: '活动管理',
-    path: '/skb/hdgl',
-    component: SkbHdgl
-  }, {
-    name: '银行列表查询',
-    path: '/skb/yhlbcx',
-    component: SkbYhlbcx
-  }, {
-    name: '银行卡审核',
-    path: '/skb/yhksh',
-    component: SkbYhksh
-  }
   ]
 },
 {
