@@ -30,7 +30,7 @@
             <el-table :data="tableData" border>
                 <el-table-column type="index" label="序号" width="80">
                 </el-table-column>
-                <el-table-column prop="objname" label="数据对象" width="120">
+                <el-table-column prop="objname" label="数据对象">
                 </el-table-column>
                 <el-table-column prop="createtime" label="创建时间" width="200">
                 </el-table-column>
@@ -42,12 +42,12 @@
                 <el-table-column prop="updateuser" label="修改人" width="140">
                 </el-table-column>
                 -->
-                <el-table-column prop="disable" :formatter="test" label="是否可用" width="140">
+                <el-table-column prop="disable" :formatter="test" label="是否可用">
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="150px">
                     <span>
-                          <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
-                         <el-button type="primary" size="small" @click="switchState($index, row)">{{row.disable==0?'禁用':'可用'}}</el-button>
+                          <el-button type="danger" v-if='del && row.objname!="全体"' size="small" @click="handleDelete($index, row)">删除</el-button>
+                         <el-button type="primary" v-if='row.objname!="全体"' size="small" @click="switchState($index, row)">{{row.disable==0?'禁用':'可用'}}</el-button>
                           <!-- <el-button type="primary" size="small" @click="handleEdit($index, row)">编辑</el-button> -->
                     </span>
                 </el-table-column>
@@ -56,7 +56,7 @@
         <!--分页-->
         <el-col :span="24" class="pagination">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :total="totalElements" :page-sizes='[size]'>
+                layout="total, sizes, prev, pager, next" :total="totalElements" :page-sizes='[10,20,30,50,100]'>
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -124,6 +124,7 @@
                 formInline: {
                     objname: '',
                     disable: '',
+                    size:10,
                     enable: '',
                     page: ''
                 },
@@ -349,6 +350,8 @@
                         res) {
                         var code = res.data.retCode;
                         var message = res.data.retMsg;
+                        let aAarray = [];
+                        let bAarray = [];
                         setTimeout(() => {
                             if (code == "000000") {
                                 vm.$store.dispatch('LOAD', false);
@@ -357,7 +360,19 @@
                                 vm.size = res.data.retData.size;
                                 vm.number = parseInt(res.data.retData.number + 1)
                                 vm.totalElements = res.data.retData.totalElements;
-                                vm.tableData = data;
+
+                                for (let i = 0; i < data.length; i++) {
+
+                                    if (data[i].objname == '全体') {
+                                        
+                                        aAarray.push(data[i]);
+                                    } else {
+                                        bAarray.push(data[i]);
+                                    }
+                                }
+
+                                let results = aAarray.concat(bAarray)
+                                vm.tableData = results;
                                 callback;
                             } else {
                                 vm.errMsg('查询失败');
@@ -404,7 +419,10 @@
             //     console.log(file);
             // },
             handleSizeChange(val) {
+                
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
 
             handleCurrentChange(val) {

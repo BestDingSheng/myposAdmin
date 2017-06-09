@@ -17,7 +17,9 @@ module.exports = {
         path: resolve(__dirname, './dist'),
         // 入口js的打包输出文件名
         // filename: 'build.js'
-        filename: '[name].js'
+        filename: '[name].js',
+        // publicPath: process.env.NODE_ENV === 'production' ? '/mposmsNew' : '/'
+        
     },
     module: {
         /*
@@ -55,7 +57,7 @@ module.exports = {
                  eslint-loader用来检查代码, 如果有错误, 编译的时候会报错.
                  babel-loader用来编译js文件.
                  */
-               // use: ['babel-loader', 'eslint-loader'] // eslint js 语法检查 暂时没用先注释了
+                // use: ['babel-loader', 'eslint-loader'] // eslint js 语法检查 暂时没用先注释了
                 use: ['babel-loader']
             },
             {
@@ -84,7 +86,7 @@ module.exports = {
                 /*
                  匹配各种格式的图片和字体文件
                  */
-                test: /\.(png|jpg|jpeg|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+                test: /\.(png|jpg|jpeg|ico|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
                 /*
                  使用url-loader, 它接受一个limit参数, 单位为字节(byte)
                  当文件体积小于limit时, url-loader把文件转为Data URI的格式内联到引用的地方
@@ -92,6 +94,7 @@ module.exports = {
                 use: [{
                     loader: 'url-loader',
                     options: {
+                        //limit: 10000,
                         limit: 10000,
                         name: 'img/[name].[hash:7].[ext]'
                     }
@@ -127,7 +130,7 @@ module.exports = {
         //         warnings: false
         //     }
         // })
-        
+
     ],
     /*
      配置开发时用的服务器, 让你可以用 http://127.0.0.1:8100/ 这样的url打开页面来调试
@@ -144,7 +147,7 @@ module.exports = {
         extensions: ['.js', '.vue', '.css']
     },
     // eval-source-map is faster for development
-     devtool: '#eval-source-map'
-    //devtool: false
+    //devtool: '#eval-source-map'
+    devtool: process.env.NODE_ENV === 'production' ? false : '#eval-source-map'
 
 }

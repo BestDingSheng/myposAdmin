@@ -57,7 +57,7 @@
         <!--分页-->
         <el-col :span="24" class="pagination">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :page-sizes='[size]' :total="totalElements">
+                layout="total, sizes, prev, pager, next" :page-sizes='[10,20,30,50,100]' :total="totalElements">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -119,7 +119,8 @@
                     enable: '',
                     createtime: '',
                     createuser: '',
-                    page: ''
+                    page: '',
+                    size:10
                 },
                 addForm: {
                     pvgroupno: '', //渠道ID
@@ -327,6 +328,8 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
             handleCurrentChange(val) {
                 this.handleSearch(val, this.sucMsg('加载成功'));

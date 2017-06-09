@@ -52,7 +52,7 @@
         <!--分页-->
         <el-col :span="24" class="pagination">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :page-sizes="[size]" :total="totalElements">
+                layout="total, sizes, prev, pager, next" :page-sizes="[10,20,30,50,100]" :total="totalElements">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -423,6 +423,7 @@
                 formInline: {
                     name: '',
                     mobile: '',
+                    size:10,
                     gender: '',
                     startTime: '',
                     endTime: '',
@@ -834,7 +835,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+message);
                                 vm.$store.dispatch('LOAD', false);
                             }
                         }, 1000);
@@ -880,6 +881,8 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
             handleCurrentChange(val) {
                 this.handleSearch(val, this.sucMsg('加载成功'));

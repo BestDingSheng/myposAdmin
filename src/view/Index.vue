@@ -4,14 +4,14 @@
         <div class="panel">
             <div class="panel-aside" ref="panelAside">
                 <h3 class="role">
-                    
+
                     <p>
                         欢迎系统管理员：{{username}}
                     </p>
                     <p>
                         管理员级别：{{roleName}}
                     </p>
-                    
+
                 </h3>
                 <el-tree :data="this.$store.state.login.menuData" :props="defaultMenuProps" @node-click="handleNodeClick"></el-tree>
             </div>
@@ -218,11 +218,15 @@
         },
         created() {
             this.$store.commit('setUserName', localStorage.username);
-            this.$store.dispatch('LOAD',true);
+            this.$store.dispatch('LOAD', true);
         },
-        computed:{
-            roleName(){
-                return localStorage.getItem('roleName')
+        computed: {
+            roleName() {
+                //return localStorage.getItem('roleName')
+
+
+                return this.$store.state.login.roleName;
+                
             }
         },
         mounted() {
@@ -282,7 +286,7 @@
                                     for (let j = 0; j < data[i].children[c].aSystemFunctions.length; j++) {
                                         pArr.push(data[i].children[c].aSystemFunctions[j].operatecode)
                                         fnObj[data[i].children[c].url] = pArr;
-                                       
+
                                     }
                                 }
 
@@ -290,11 +294,11 @@
 
                             //console.log(fnObj);
                             vm.$store.dispatch('permissions', fnObj);
-                            
-                            vm.$store.dispatch('LOAD',false);
+
+                            vm.$store.dispatch('LOAD', false);
                         } else {
                             //('查询失败');
-                            vm.$store.dispatch('LOAD',false);
+                            vm.$store.dispatch('LOAD', false);
                         }
                     }, 1000);
                 }).catch(function (error) {
@@ -361,7 +365,7 @@
             color: #c0ccda;
             font-size: 14px;
             text-align: left;
-            padding-left:20px;
+            padding-left: 20px;
             height: 60px;
             line-height: 20px;
             border-bottom: 1px solid #475669;

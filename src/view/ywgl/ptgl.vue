@@ -56,7 +56,7 @@
         <!--分页-->
         <el-col :span="24" class="pagination">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :page-sizes='[size]' :total="totalElements">
+                layout="total, sizes, prev, pager, next" :page-sizes='[10,20,30,50,100]' :total="totalElements">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -116,6 +116,7 @@
                     platgroupno: '',
                     plats: '',
                     enable: '',
+                    size:10,
                     createtime: '',
                     page: ''
                 },
@@ -232,6 +233,7 @@
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
+                    var msg = res.data.retData;
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.$refs.addForm.resetFields()
@@ -241,7 +243,7 @@
 
                             vm.handleSearch(vm.sucMsg('添加成功'));
                         } else {
-                            vm.errMsg('新增失败');
+                            vm.errMsg('新增失败'+msg);
                         }
                     }, 1000);
                 }).catch(function (error) {
@@ -255,11 +257,12 @@
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
+                    var msg = res.data.retData;                    
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.handleSearch(vm.sucMsg('更新成功'));
                         } else {
-                            vm.errMsg('修改失败')
+                            vm.errMsg('修改失败'+msg)
                         }
                     }, 1000);
                 }).catch(function (error) {
@@ -291,7 +294,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -332,12 +335,12 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
             handleCurrentChange(val) {
-                if (val != 1) {
+                
                     this.handleSearch(val, this.sucMsg('加载成功'));
-
-                }
             },
             handleDelete(index, row) { // 删除方法
                 this.$confirm('确定删除此条数据吗?', '提示', {

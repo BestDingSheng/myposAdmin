@@ -6,8 +6,10 @@ const qs = require('qs')
 
 const state = {
   load: false,
+  // server: '127.0.0.1:8080',
   // server: '10.1.22.70:9999/mposmsNew', // 备机 生产地址外网转发  10.1.22.70:9999/mposmsNew  180.166.12.107:8280/mposmsNew
-  server: '180.166.12.107:8280/mposmsNew', // 测试 生产地址外网转发  10.1.22.70:9999/mposmsNew  180.166.12.107:8280/mposmsNew
+    //  server: '180.166.12.107:8280/mposmsNew', // 测试 生产地址外网转发  10.1.22.70:9999/mposmsNew  180.166.12.107:8280/mposmsNew
+   server: '10.7.111.196:9999/mposmsNew', // 测试 生产地址外网转发  10.1.22.70:9999/mposmsNew  180.166.12.107:8280/mposmsNew
   // server: '10.15.2.138:9999/mposmsNew', // 线上 生产地址外网转发  10.1.22.70:9999/mposmsNew  180.166.12.107:8280/mposmsNew
   // server: '10.1.22.70:52232/mposmsNew', // 线上 生产地址外网转发  10.1.22.70:9999/mposmsNew  180.166.12.107:8280/mposmsNew
   localserver: '10.7.111.196:9999/mposmsNew', // 内网服务地址  http://10.1.22.70:28080/mposmsNew

@@ -2,32 +2,41 @@
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
-            <el-form :inline="true" :model="formInline" ref="formInline" class="demo-form-inline">
+            <el-form :inline="true" :model="formInline" label-width="90px" ref="formInline" class="demo-form-inline">
 
                 <el-form-item prop="type_code" label='字典组编号' label-width="90px">
                     <el-input v-model="formInline.type_code" placeholder="字典组编号"></el-input>
                 </el-form-item>
-                <el-form-item prop="key" label="key" label-width="90px">
+                <el-form-item prop="key" label="key" >
                     <el-input v-model="formInline.key" placeholder="key"></el-input>
                 </el-form-item>
-                <el-form-item prop="value" label="value" label-width="60px">
+                <el-form-item prop="value" label="value" >
                     <el-input v-model="formInline.value" placeholder="value"></el-input>
                 </el-form-item>
-                <el-row>
-                    <el-col>
-                        <el-form-item label="渠道" prop="channel" label-width="90px">
-                            <el-select v-model="formInline.channel" placeholder="请选择">
-                                <el-option v-for='item in channelArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="是否可用" prop="enable" label-width="90px">
-                            <el-select v-model="formInline.enable" placeholder="请选择">
-                                <el-option label="可用" value="1"></el-option>
-                                <el-option label="禁用" value="2"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
+                <el-form-item label="渠道" prop="channel" >
+                    <el-select v-model="formInline.channel" placeholder="请选择">
+                        <el-option v-for='item in channelArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="平台" prop="platform" label-width="90px">
+                    <el-select v-model="formInline.platform" placeholder="请选择">
+                        <el-option v-for='item in platformArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="版本" prop="version">
+                    <el-select v-model="formInline.version" placeholder="请选择">
+                        <el-option v-for='item in versionArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="是否可用" prop="enable" label-width="90px">
+                    <el-select v-model="formInline.enable" placeholder="请选择">
+                        <el-option label="可用" value="1"></el-option>
+                        <el-option label="禁用" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+
 
             </el-form>
         </el-col>
@@ -42,28 +51,34 @@
         <!--表格-->
         <el-col :span="24">
             <el-table :data="tableData" border>
-                <el-table-column type="index" label="序号" width="80">
+                <el-table-column type="index" label="序号" >
                 </el-table-column>
-                <el-table-column prop="typeCode" label="字典组编号" width="170">
+                <el-table-column prop="typeCode" label="字典组编号" width='120px'>
                 </el-table-column>
-                <el-table-column prop="key" label="key" width="220">
+                <el-table-column prop="remark" label="描述" width='150px'>
                 </el-table-column>
-                <el-table-column prop="value" label="Value" width="150">
+                <el-table-column prop="key" label="key"  width='170px'>
                 </el-table-column>
-                <el-table-column prop="channel" label="渠道" width="120">
+                <el-table-column prop="value" label="Value" >
                 </el-table-column>
-                <el-table-column prop="remark" label="描述" width="200">
+                <el-table-column prop="pvs" label="渠道" >
                 </el-table-column>
-                <el-table-column prop="createDatetime" label="创建时间" width="200">
+                <el-table-column prop="plats" label="平台" >
                 </el-table-column>
-                <el-table-column prop="operatorby" label="操作人" width="140">
-                </el-table-column>
-                <el-table-column prop="updateDatetime" label="修改时间" width="200">
+                <el-table-column prop="vers" label="版本" >
                 </el-table-column>
 
-                <el-table-column prop="enabled" :formatter="test" label="是否可用" width="140">
+                <el-table-column prop="createDatetime" label="创建时间"  width='140px'>
                 </el-table-column>
-                <el-table-column inline-template fixed="right" label="维护" width="150px">
+                <el-table-column prop="operatorby" label="操作人" >
+                </el-table-column>
+                <!--
+                <el-table-column prop="updateDatetime" label="修改时间" width="200">
+                </el-table-column>
+                -->
+                <el-table-column prop="enabled" :formatter="test" label="是否可用" width="80">
+                </el-table-column>
+                <el-table-column inline-template fixed="right" label="维护" width="100px">
                     <span>
                           <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
                          <!-- <el-button type="primary" size="small" @click="handleEdit($index, row)">编辑</el-button>
@@ -74,8 +89,8 @@
         </el-col>
         <!--分页-->
         <el-col :span="24" class="pagination">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :total="totalElements">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-sizes='[10,20,30,50,100]'
+                layout="total, sizes, prev, pager, next" :total="totalElements" :page-size="size">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -93,6 +108,16 @@
                 <el-form-item label="渠道" prop="channel">
                     <el-select v-model="addForm.channel" placeholder="请选择">
                         <el-option v-for='item in channelArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="平台" prop="platform">
+                    <el-select v-model="addForm.platform" placeholder="请选择">
+                        <el-option v-for='item in platformArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="版本" prop="version">
+                    <el-select v-model="addForm.version" placeholder="请选择">
+                        <el-option v-for='item in versionArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="描述" prop="remark">
@@ -153,6 +178,8 @@
                 number: 0, //当前页码
                 totalElements: 0,
                 channelArry: [], //渠道
+                versionArry: [], //渠道
+                platformArry: [], //渠道
                 tableData: [],
                 formInline: {
                     page: '',
@@ -160,7 +187,10 @@
                     key: '',
                     value: '',
                     channel: '',
-                    enable: ''
+                    enable: '',
+                    version: '',
+                    size:10,
+                    platform: ''
                 },
                 addForm: {
                     remark: '',
@@ -169,6 +199,8 @@
                     key: '',
                     value: '',
                     channel: '',
+                    version: '',
+                    platform: ''
                 },
                 editForm: {
                     remark: '',
@@ -200,6 +232,16 @@
                         message: '请输入渠道',
                         trigger: 'blur'
                     }],
+                    version: [{
+                        required: true,
+                        message: '请选择版本',
+                        trigger: 'blur'
+                    }],
+                    platform: [{
+                        required: true,
+                        message: '请选择平台',
+                        trigger: 'blur'
+                    }],
                     remark: [{
                         required: false,
                         message: '请输入描述',
@@ -218,6 +260,8 @@
         mounted() {
             this.handleSearch();
             this.getChannelFn();
+            this.selectFn();
+            this.selectFn1();
         },
         computed: {
 
@@ -305,6 +349,40 @@
                     type: 'error',
                     message: msg
                 });
+            },
+            selectFn() {
+                var vm = this;
+                axios.post("http://" + vm.$store.state.common.server + "/business/tabCv/getListForSelect", qs.stringify(
+
+                )).then(function (res) {
+                    var code = res.data.retCode;
+                    setTimeout(() => {
+                        if (code == "000000") {
+                            vm.versionArry = res.data.retData;
+                        } else {
+
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            },
+            selectFn1() {
+                var vm = this;
+                axios.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/getListForSelect", qs.stringify(
+
+                )).then(function (res) {
+                    var code = res.data.retCode;
+                    setTimeout(() => {
+                        if (code == "000000") {
+                            vm.platformArry = res.data.retData;
+                        } else {
+
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
             },
             addFn() { //新增 方法
                 var vm = this;
@@ -415,6 +493,9 @@
             },
             handleSizeChange(val) {
                 // console.log(`每页 ${val} 条`);
+                console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
             handleCurrentChange(val) {
                 this.handleSearch(val, this.sucMsg('加载成功'));
@@ -453,7 +534,6 @@
                     })
 
                 }).catch(() => {
-                    alert('asdsadas')
                     this.$store.dispatch('LOAD', false);
                     this.$message({
                         type: 'info',
@@ -469,7 +549,7 @@
                 this.editForm.key = row.key;
                 this.editForm.value = row.value;
                 this.editForm.channel = row.channel;
-                this.$store.dispatch("JUMP_SERVICE", this.editForm.type);
+                //   this.$store.dispatch("JUMP_SERVICE", this.editForm.type);
             },
         }
     }

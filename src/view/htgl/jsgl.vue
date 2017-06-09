@@ -50,7 +50,7 @@
         <!--分页-->
         <el-col :span="24" class="pagination">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :page-sizes="[size]" :total="totalElements">
+                layout="total, sizes, prev, pager, next" :page-sizes="[10,20,30,50,100]" :total="totalElements">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -249,6 +249,7 @@
                 formInline: {
                     rolename: '',
                     page: '',
+                    size:10,
                     startTime: '',
                     endTime: '',
 
@@ -556,10 +557,6 @@
                     this.formInline.startTime = '';
                     this.formInline.endTime = '';
                 }
-
-
-
-
                 //
                 vm.$store.dispatch('LOAD', true);
                 var API = qs.stringify(
@@ -593,7 +590,7 @@
                             } else {
                                 vm.$store.dispatch('SERVERMSG', {
                                     type: 'error',
-                                    msg: '服务器错误请重新再试',
+                                    msg: message,
                                     me: vm
                                 })
                             }
@@ -638,6 +635,8 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
             handleCurrentChange(val) {
                 //this.handleSearch(val, this.sucMsg('加载成功'));

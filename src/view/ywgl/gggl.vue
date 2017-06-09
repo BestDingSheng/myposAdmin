@@ -1,29 +1,31 @@
-<!--  业务管理>定向业务发布 -->
+<!--  业务管理>广告管理 -->
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="formInline" ref="formInline" class="demo-form-inline" label-width='70px'>
+                <el-form-item label="版面" prop="contenttype">
+                    <el-select v-model="formInline.contenttype" placeholder="请选择">
+                        <el-option v-for="item in banmian" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="栏位" prop="idx">
                     <el-select v-model="formInline.idx" placeholder="请选择">
                         <el-option v-for="item in lanwei" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="title" label="标题">
+                <el-form-item prop="title" label="广告名称">
                     <el-input v-model="formInline.title" placeholder="标题"></el-input>
+                </el-form-item>
+
+
+                <el-form-item label="渠道" prop="pvgroupno">
+                    <el-select v-model="formInline.pvgroupno" placeholder="请选择">
+                        <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="版本" prop="vergroupno">
                     <el-select v-model="formInline.vergroupno" placeholder="请选择">
                         <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="对象" prop="objectno">
-                    <el-select v-model="formInline.objectno" placeholder="请选择">
-                        <el-option v-for="item in objectno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="渠道" prop="pvgroupno">
-                    <el-select v-model="formInline.pvgroupno" placeholder="请选择">
-                        <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="平台" prop="platgroupno">
@@ -31,6 +33,7 @@
                         <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
+
                 <el-form-item label="状态" prop="auditStatus" label-width="">
                     <el-select v-model="formInline.auditStatus" placeholder="请选择">
                         <el-option label="审核通过" value="PASS"></el-option>
@@ -39,7 +42,7 @@
                         <el-option label="禁用" value="DISABLED"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="状态时间" label-width="">
+                <el-form-item label="状态时间" label-width="98px">
                     <!--<el-input v-model="formInline.vers" placeholder="创建时间"></el-input>-->
                     <el-date-picker v-model="createdTimeRange" type="datetimerange" placeholder="请选择时间范围" style="width:350px;"></el-date-picker>
                 </el-form-item>
@@ -58,17 +61,14 @@
             <el-table :data="tableData" border :default-sort="{prop: 'date', order: 'ascending'}">
                 <el-table-column type="index" label="序号" width='70'>
                 </el-table-column>
-                <el-table-column prop="idx" label="栏位" width='70'></el-table-column>
-                <el-table-column prop="directbusno.title" width='120' label="标题"></el-table-column>
-                <el-table-column prop="objectno.objname" width='120' label="对象"></el-table-column>
 
-                <el-table-column prop="pvgroupno.pvs" label="渠道">
-                </el-table-column>
-                <el-table-column prop="vergroupno.vers" label="版本">
-                </el-table-column>
-                <el-table-column prop="platgroupno.plats" label="平台">
-                </el-table-column>
-                <el-table-column prop="auditStatusName" label="状态" width='100'>
+                <el-table-column prop="directbusno.contenttypeName" label="版面" width='100'></el-table-column>
+                <el-table-column prop="idx" label="栏位" width='70'></el-table-column>
+                <el-table-column prop="directbusno.title" label="广告名称" width='120'></el-table-column>           
+                <el-table-column prop="pvgroupno.pvs" label="渠道"></el-table-column>
+                <el-table-column prop="vergroupno.vers" label="版本"></el-table-column>
+                <el-table-column prop="platgroupno.plats" label="平台"> </el-table-column>
+                <el-table-column prop="auditStatusName" label="状态">
                     <template scope="scope">
                         <div :class="{ success:scope.row.auditStatusName=='审核通过',error:scope.row.auditStatusName=='驳回',warning:scope.row.auditStatusName=='审核中'}">{{ scope.row.auditStatusName }}</div>
                     </template>
@@ -93,58 +93,211 @@
         </el-col>
         <!--分页-->
         <el-col :span="24" class="pagination">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"  :current-page="number" :page-size="size"
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
                 layout="total, sizes, prev, pager, next" :page-sizes='[10,20,30,50,100]' :total="totalElements">
             </el-pagination>
         </el-col>
         <!--新建-->
-        <el-dialog title="新建" v-model="dialogAdd" :close-on-click-modal='false' custom-class="dialogAdd" size="tiny">
+        <el-dialog title="新建" v-model="dialogAdd" :close-on-click-modal='false' custom-class="dialogAdd" size="large">
             <el-form :rules="addRules" label-width="100px" :model="addForm" ref="addForm">
+                                
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="渠道选择" prop="pvgroupno">
+                            <el-select v-model="addForm.pvgroupno" placeholder="请选择">
+                                <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="版本选择" prop="vergroupno">
+                            <el-select v-model="addForm.vergroupno" placeholder="请选择">
+                                <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="平台选择" prop="platgroupno">
+                            <el-select v-model="addForm.platgroupno" placeholder="请选择">
+                                <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="版面选择" prop="contenttype">
+                            <el-select v-model="addForm.contenttype" placeholder="请选择">
+                                <el-option v-for="item in banmian" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="栏位选择" prop="idx">
+                            <el-select v-model="addForm.idx" placeholder="请选择">
+                                <el-option v-for="item in lanwei" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="广告名称" prop="title">
+                            <el-input v-model="addForm.title" placeholder="请输入"></el-input>
+
+                        </el-form-item>
+                    </el-col>
+                </el-row>
 
 
-                <el-form-item label="渠道选择" prop="pvgroupno">
-                    <el-select v-model="addForm.pvgroupno" placeholder="请选择" @change='selectFn'>
-                        <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="版本选择" prop="vergroupno">
-                    <el-select v-model="addForm.vergroupno" placeholder="请选择" @change='selectFn'>
-                        <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
+                <!-- img -->
+
+                <el-form-item label="内容图片" class="adCon" prop="content_image">
+                    <el-input v-model="addForm.content_image" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
+                    <el-upload :with-credentials='true' class="upload-demo" ref='titleUpload' drag accept="image/png,image/jpeg" :action="'http://'+this.$store.state.common.server+'/business/fileUpload/uploadfileToServer'"
+                        type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove" :on-success="uploadSuc">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    </el-upload>
                 </el-form-item>
 
-                <el-form-item label="平台选择" prop="platgroupno">
-                    <el-select v-model="addForm.platgroupno" placeholder="请选择" @change='selectFn'>
-                        <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
+                <!-- option -->
+
+                <el-row :gutter="24">
+
+                    <el-col :span="10">
+                        <el-form-item label="跳转网页" label-width="100px" prop='content_url'>
+                            <el-input type="text" placeholder="跳转网页" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="跳转页面标题" label-width="100px" prop='content_url_title'>
+                            <el-input type="text" placeholder="跳转页面标题" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url_title"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-form-item label="广告发布日期" label-width="120px" prop='publishST'>
+                    <!--<el-input v-model="formInline.vers" placeholder="创建时间"></el-input>-->
+                    <el-date-picker v-model="addForm.publishST" type="datetime" placeholder="选择日期时间" style='width:250px;'>
+                    </el-date-picker>
                 </el-form-item>
-                <el-form-item label="发布栏位" prop="idx">
-                    <el-select v-model="addForm.idx" placeholder="请选择" @visible-change='testding'>
-                        <el-option v-for="item in weizhi" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
+                <el-form-item label="广告结束日期" label-width="120px" prop='publishET'>
+                    <!--<el-input v-model="formInline.vers" placeholder="创建时间"></el-input>-->
+                    <el-date-picker v-model="addForm.publishET" type="datetime" placeholder="选择日期时间" style='width:250px;'>
+                    </el-date-picker>
                 </el-form-item>
-                <el-form-item label="业务选择" prop="title">
-                    <el-input placeholder="请选择业务" v-model="addForm.title">
-                        <template slot="append">
-                            <el-button type="primary" @click='getCurIndex'>选择</el-button>
-                        </template>
-                    </el-input>
+            </el-form>
+            <div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="submitForm('addForm')">申请发布</el-button>
+            </span>
+        </el-dialog>
+
+
+        <!-- 详情 -->
+        <el-dialog title="查看详情" v-model="showDetailsDog" :close-on-click-modal='false' custom-class="showDetailsDog" size="large">
+            <el-form :rules="addRules" label-width="100px" :model="detailedFrom" ref="detailedFrom">
+
+                <el-row>
+                    <el-col :span='12'>
+                        <el-form-item label="广告名称" prop="title">
+                            <el-input v-model="detailedFrom.title" :disabled='true' placeholder="请输入"></el-input>
+
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <!-- img -->
+                <el-form-item label="内容图片" class="adCon" prop="content_image">
+                    <img :src="detailedFrom.content_image" alt="" class='showimg'>
                 </el-form-item>
-                <el-form-item label="发布对象" prop="objectno">
-                    <el-select v-model="addForm.objectno" placeholder="请选择">
-                        <el-option v-for="item in objectno" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
+                <!-- option -->
+                <el-row :gutter="24">
+
+                    <el-col :span="10">
+                        <el-form-item label="跳转网页" label-width="100px" prop='content_url'>
+
+                            <el-input type="text" placeholder="跳转网页" :disabled='true' v-if='!detailedFrom.content_url' v-model="detailedFrom.content_url"></el-input>
+
+                            <a :href='detailedFrom.content_url' v-if='detailedFrom.content_url' target="_blank">跳转链接</a>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="跳转页面标题" label-width="100px" prop='content_url_title'>
+                            <el-input type="text" placeholder="跳转页面标题" :disabled='true' v-model="detailedFrom.content_url_title"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+
+                <el-form-item label="广告发布日期" label-width="128px" prop='publishST'>
+                    <!--<el-input v-model="formInline.vers" placeholder="创建时间"></el-input>-->
+                    <el-date-picker v-model="detailedFrom.publishST" :disabled='true' type="datetime" placeholder="选择日期时间" style='width:250px;'>
+                    </el-date-picker>
                 </el-form-item>
+                <el-form-item label="广告结束日期" label-width="128px" prop='publishET'>
+                    <!--<el-input v-model="formInline.vers" placeholder="创建时间"></el-input>-->
+                    <el-date-picker v-model="detailedFrom.publishET" :disabled='true' type="datetime" placeholder="选择日期时间" style='width:250px;'>
+                    </el-date-picker>
+                </el-form-item>
+
+
 
             </el-form>
             <div>
             </div>
 
 
-            <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="submitForm('addForm')">申请发布</el-button>
-            </span>
+
+            <el-row :gutter='24'>
+                <el-col :span='12'>
+                    <table border="0" cellspacing="0" cellpadding="0" class='tableAset'>
+                        <tr>
+                            <th></th>
+                            <th>时间</th>
+                            <th>操作人</th>
+                        </tr>
+                        <tr>
+                            <td>创建</td>
+                            <td>{{operation.createtime}}</td>
+                            <td>{{operation.createUser}}</td>
+
+                        </tr>
+                        <tr>
+                            <td>审核</td>
+                            <td>{{operation.audittime}}</td>
+                            <td>{{operation.auditUser}}</td>
+                        </tr>
+                        <tr>
+                            <td>禁用</td>
+                            <td>{{operation.disableTime}}</td>
+                            <td>{{operation.disableUser}}</td>
+                        </tr>
+                    </table>
+                </el-col>
+            </el-row>
+            <el-row :gutter='24' style='margin-top:10px;'>
+                <el-col :span='6' v-if='isaudit'>
+                    <el-button type='warning' @click='auditStatus("REJECT")'>驳回</el-button>
+                    <el-button type='success' @click='auditStatus("PASS")'>通过</el-button>
+                </el-col>
+            </el-row>
+
         </el-dialog>
+
+        <!-- 详情 end -->
+
+
+
+
+
 
         <!--二级弹窗-->
         <el-dialog title="选择" v-model="dialogTableVisible" :close-on-click-modal='false'>
@@ -155,178 +308,7 @@
             </el-table>
         </el-dialog>
 
-        <!--详情table-->
-        <el-dialog title="详情" v-model="showDetailsDog" :close-on-click-modal='false' size='large' @close='close'>
-            <!--
-            <el-dialog title="新建" :close-on-click-modal='false' custom-class="dialogAdd" v-model="dialogAdd" size="large">
-             -->
-            <el-row :gutter="24">
-                <el-col :span="24">
-                    <el-form ref="detailedFrom" :model="detailedFrom" label-width="100px">
-                        <el-form-item label="编辑方式：" prop="contenttype">
-                            <el-radio-group v-model="detailedFrom.contenttype" :disabled='true'>
-                                <el-radio label="MULTI" v-if='detailedFrom.contenttype=="MULTI"'>定向业务下</el-radio>
-                                <el-radio label="SIMPLE" v-if='detailedFrom.contenttype=="SIMPLE"'>定向业务上</el-radio>
-                            </el-radio-group>
-                        </el-form-item>
-                        <el-form-item label="标题文本">
-                            <el-input type="input" v-model="detailedFrom.title" :disabled='true'></el-input>
-                        </el-form-item>
-                        <el-form-item label="Icon图片" class="adCon" prop="title_logoImage">
-                            <el-input v-model="detailedFrom.title_logoImage" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
 
-                            <img :src='detailedFrom.title_logoImage' class='showimg'></img>
-                        </el-form-item>
-
-                        <div v-if="detailedFrom.contenttype=='SIMPLE'">
-                        
-
-                            <el-row :gutter="24">
-                             <!--
-                                <el-col :span='3' >
-                                    <div style="margin-top:11px;" v-if='false'>跳转目标</div>
-                                </el-col>
-                              -->  
-                                <el-col :span='3'>
-                                    </el-form-item prop='open_type'>
-                                    <el-radio class="radio" style="margin-top:11px;" v-if="detailedFrom.open_type=='open_business'" v-model="detailedFrom.open_type" label="open_business">打开业务</el-radio>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span='12' v-if="detailedFrom.open_type=='open_business'">
-                                    <el-form-item label="跳转业务">
-                                        <el-select v-model="detailedFrom.title_click_url" placeholder="请选择业务" :disabled='true'>
-                                            <el-option v-for="item in this.title_click_url" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="24">
-                                <el-col :span='3' :offset="0">
-                                    <el-form-item label-width='0' prop='open_type'>
-                                        <el-radio class="radio" style="margin-bottom:10px;" v-if="detailedFrom.open_type!=='open_business'" v-model="detailedFrom.open_type" label="open_url">打开网页</el-radio>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span='9' v-if="detailedFrom.open_type=='open_url'">
-                                    <el-form-item label="网页标题" label-width="80px" prop='title_url_title'>
-                                        <el-input v-model="detailedFrom.title_url_title" :disabled='true' placeholder="请输入内容"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span='9' v-if="detailedFrom.open_type=='open_url'">
-                                    <el-form-item label="网页链接" label-width="70px" prop='title_url'>
-                                        <el-input v-model="detailedFrom.title_url" :disabled='true' placeholder="请输入内容"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                        </div>
-                        <div v-if="detailedFrom.contenttype!=='SIMPLE'">
-                            <!--判断显示隐藏-->
-                            <el-form-item label="内容" prop='content' v-if='detailedFrom.content'>
-                                <el-input type="textarea" :disabled='true' v-model="detailedFrom.content"></el-input>
-                            </el-form-item>
-                            <el-form-item label="内容图片" class="adCon" prop="content_image" v-if='detailedFrom.content==false'>
-                                <el-input v-model="detailedFrom.content_image" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
-                                <img :src="detailedFrom.content_image" class='showimg'>
-                            </el-form-item>
-                            <!-- 查看详情 -->
-                            <el-row :gutter="24" v-if='detailedFrom.detailOrImmediateflag=="detailFlag"'>
-                                <el-col :span="4">
-                                    <el-form-item label="" prop="detailOrImmediateflag" label-width="10px">
-
-                                        <el-radio class="radio" v-model="detailedFrom.detailOrImmediateflag" label="detailFlag">查看详情</el-radio>
-
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="5">
-                                    <el-form-item label="" label-width="0px">
-                                        <el-input type="text" width='65%' :disabled="true" placeholder="查看详情" v-model="detailedFrom.detaillable"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="7">
-                                    <el-form-item label="跳转URL" label-width="70px" prop='detail_url'>
-                                        <el-input type="text" :disabled="true" placeholder="跳转URL" v-model="detailedFrom.detail_url" v-if='detailedFrom.detail_url==false'></el-input>
-
-
-                                        <a :href='aUrl' target="_blank" v-if='detailedFrom.detail_url'>跳转链接</a>
-
-
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="8">
-                                    <el-form-item label="跳转页面标题" label-width="100px" prop='detail_url_title'>
-                                        <el-input type="text" :disabled="true" placeholder="跳转页面标题" v-model="detailedFrom.detail_url_title"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <!-- 立即体验 -->
-                            <el-row :gutter="24" v-if='detailedFrom.detailOrImmediateflag!="detailFlag"'>
-                                <el-col :span="4">
-                                    <el-form-item label="" prop="" label-width="10px" prop='detailOrImmediateflag'>
-                                        <el-radio class="radio" v-model="detailedFrom.detailOrImmediateflag" label="experImmediate">立即体验</el-radio>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="10">
-                                    <el-form-item label="跳转业务" prop='busiList_id'>
-                                        <el-select v-model="detailedFrom.busiList_id" :disabled="true" placeholder="请选择跳转业务">
-                                            <el-option v-for="item in this.title_click_url" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-col>
-                                <!--
-                                <el-col :span="10">
-                                    <el-form-item label="最低版本限制" prop='busiList_version'>
-                                        <el-select v-model="detailedFrom.busiList_version" :disabled="addForm.detailOrImmediateflag!='experImmediate'" placeholder="请选择活动区域">
-                                            <el-option v-for="item in this.busiList_version" :key="item.id" :label="item.text" :value="item.id"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-col>
-                                -->
-                            </el-row>
-
-                        </div>
-
-                        <el-row :gutter='24'>
-                            <el-col :span='12'>
-                                <table border="0" cellspacing="0" cellpadding="0" class='tableAset'>
-                                    <tr>
-                                        <th></th>
-                                        <th>时间</th>
-                                        <th>操作人</th>
-                                    </tr>
-                                    <tr>
-                                        <td>创建</td>
-                                        <td>{{operation.createtime}}</td>
-                                        <td>{{operation.createUser}}</td>
-
-                                    </tr>
-                                    <tr>
-                                        <td>审核</td>
-                                        <td>{{operation.audittime}}</td>
-                                        <td>{{operation.auditUser}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>禁用</td>
-                                        <td>{{operation.disableTime}}</td>
-                                        <td>{{operation.disableUser}}</td>
-                                    </tr>
-                                </table>
-                            </el-col>
-                        </el-row>
-                        <el-row :gutter='24' style='margin-top:10px;'>
-                            <el-col :span='6' v-if='isaudit'>
-                                <el-button type='warning' @click='auditStatus("REJECT")'>驳回</el-button>
-                                <el-button type='success' @click='auditStatus("PASS")'>通过</el-button>
-                            </el-col>
-                        </el-row>
-
-                    </el-form>
-                </el-col>
-            </el-row>
-            <span slot="footer" class="dialog-footer">
-                <!--
-                <el-button type="primary" @click="submitForm('addForm')">立即创建</el-button>
-                -->
-            </span>
-        </el-dialog>
         <!-- 三级弹窗 -->
         <el-dialog title="收货地址" v-model="dialogDetailFn" size='tiny'>
             <el-row :gutter='24'>
@@ -350,6 +332,38 @@
     var qs = require("qs");
     export default {
         data() {
+            var publishST = (rule, value, callback) => {
+                if (!value) {
+                    return callback(new Error('请选择开始时间'));
+                } else {
+                    callback()
+                }
+
+            };
+            var publishET = (rule, value, callback) => {
+                if (!value) {
+                    return callback(new Error('请选择结束时间'));
+                } else {
+                    callback()
+                }
+
+            };
+
+            var content_url = (rule, value, callback) => { // 跳转url
+                if (value == '') {
+                    callback();
+                } else {
+                    let str = 'http://www.xxxxx.xxx'
+                    let reg =
+                        /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+                    if (reg.test(value)) {
+                        callback()
+                    } else {
+                        callback(new Error(str))
+
+                    }
+                }
+            }
             return {
                 gridData: [],
                 dtailgridData: [],
@@ -360,12 +374,13 @@
                 }],
                 tableData: [],
                 totalPages: 0, //总页数
-                size: 10, //每页多少条
+                size: 0, //每页多少条
                 number: 0, //当前页码
                 totalElements: 0,
                 curIndex: 0,
                 enableValue: '',
                 createdTimeRange: [],
+                releaseDate: '',
                 isaudit: false,
                 objdetail: '',
                 detailruleid: '',
@@ -395,12 +410,13 @@
                 },
                 formInline: {
                     vergroupno: "",
-                    objectno: "",
+                    title: '',
                     platgroupno: "",
                     pvgroupno: "",
                     directbusno: '',
                     auditStatus: '',
-                    size:10,
+                    contenttype: '',
+                    size: 10,
                     startTime: '',
                     endTime: '',
                     // enable: "1",
@@ -411,50 +427,57 @@
                 objectno: [],
                 platgroupno: [],
                 pvgroupno: [],
-                weizhi: [],
                 lanwei: [],
+                banmian: [],
 
                 title_click_url: [],
                 addForm: {
-                    vergroupno: "",
-                    objectno: "",
+                    contenttype: '',
+                    objectno: "1",
                     platgroupno: "",
+                    vergroupno: "",
                     pvgroupno: "",
                     enable: "1",
-                    directbusno: '',
+                    idx: '',
                     title: '',
-                    idx: ''
-                },
-                editForm: {
-                    vergroupno: "",
-                    objectno: "",
-                    platgroupno: "",
-                    pvgroupno: "",
-                    enable: "1",
-                    directbusno: '',
-                    ruleid: ''
+                    content_url: '',
+                    content_url_title: '',
+                    publishST: null,
+                    publishET: null,
+                    content_image: ''
                 },
                 detailedFrom: {
-                    detailOrImmediateflag: '',
-                    open_type: '',
-                    title_url: '',
-                    title_url_title: '',
-                    title: '',
-                    title_logoImage: '',
-                    title_click_url: '',
-                    content: '',
-                    content_image: '',
-                    detaillable: '查看详情', //查看详情
-                    detail_url: '', //查看跳转链接
-                    detail_url_title: '',
-                    busiList_id: '',
-                    busiList_version: '',
+                    objectno: "1",
+                    platgroupno: "",
+                    vergroupno: "",
+                    pvgroupno: "",
+                    enable: "1",
                     idx: '',
-                    enable: '1',
-                    contenttype: 'MULTI',
-                    directbusno: ''
+                    title: '',
+                    content_url: '',
+                    content_url_title: '',
+                    open_type: '',
+                    content_business: '',
+                    content_image: ''
                 },
                 addRules: {
+                    content_url: [{
+                        validator: content_url,
+                        trigger: 'blur'
+                    }],
+                    publishST: [{
+                        validator: publishST,
+                        trigger: 'blur'
+                    }],
+                    publishET: [{
+                        validator: publishET,
+                        trigger: 'blur'
+                    }],
+                    contenttype: [{
+                        required: true,
+                        message: "请选择",
+                        trigger: "change"
+                    }],
                     vergroupno: [{
                         required: true,
                         message: "请选择",
@@ -496,10 +519,20 @@
         mounted() {
             this.handleSearch();
             this.pullDownData();
-            this.idxsFn();
             // this.apiFn('directBusIdx ', 'MPOS', 'lanwei'); // idx 位置
-            this.apiFn('directLogoImage', 'MPOS', 'title_click_url');
-
+            // this.apiFn('directLogoImage', 'MPOS', 'title_click_url');
+            this.apiFn({
+                channel: 'mpos',
+                version: 1,
+                platform: 1,
+                type_code: 'LAYOUT'
+            }, 'lanwei')
+            this.apiFn({
+                channel: 'mpos',
+                version: 1,
+                platform: 1,
+                type_code: 'SHEET'
+            }, 'banmian')
 
 
         },
@@ -573,7 +606,7 @@
                 }
             },
             aUrl() {
-                let str = this.detailedFrom.detail_url;
+                let str = this.detailedFrom.content_url;
                 if (!str) {
                     return str;
                 }
@@ -586,39 +619,15 @@
 
         },
         methods: {
-            testding() {
-                console.log(arguments[0])
+            onChange(file, fileList) {
+                if (fileList.length > 1) {
+                    fileList.splice(0, 1);
+                }
+
             },
-            sizeChange(size){
-                alert(size)
-            },
-
-            idxsFn() {
-
-                var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
-                    qs.stringify({
-                        channel: 'MPOS',
-                        version: 1,
-                        platform: 1,
-                        type_code: 'directBusIdx'
-
-                    })).then(function (res) {
-                    var code = res.data.retCode;
-                    var data = res.data.retData;
-                    setTimeout(() => {
-                        if (code == "000000") {
-                            vm.lanwei = data;
-                        } else {
-
-                        }
-                    }, 1000);
-                }).catch(function (error) {
-                    console.log(error)
-                })
-
-
-
+            uploadSuc(files, fileList) {
+                console.log(files);
+                this.addForm.content_image = files.retData[0]
 
             },
 
@@ -667,7 +676,7 @@
             auditStatus(type) {
                 this.$store.dispatch('LOAD', true);
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/directPublish/checkCommit", qs.stringify({
+                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/checkCommit", qs.stringify({
                     ruleid: vm.detailruleid,
                     auditStatus: type
                 })).then(function (res) {
@@ -705,14 +714,11 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-
-
-
                     // return;
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
                     axios.post("http://" + vm.$store.state.common.server +
-                        "/business/directPublish/updateIfUse", qs.stringify({
+                        "/business/advertisement/updateIfUse", qs.stringify({
                             ruleid: row.ruleid,
                             auditStatus: 'DISABLED'
                         })).then(function (res) {
@@ -770,11 +776,16 @@
                 });
             },
             addFn() { //新增 方法
+
+                console.log(this.addForm.publishET);
+                // return;
+
+
                 this.$store.dispatch('LOAD', true);
                 // console.log(this.addForm);
                 // return;
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/directPublish/save", qs.stringify(
+                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -911,6 +922,8 @@
             handleSearch(num, callback) {
                 var vm = this;
 
+
+
                 var data = {};
                 if ((!this.formInline.rolename && !this.createdTimeRange.length) || (this.formInline.rolename && !this.createdTimeRange
                         .length)) {
@@ -949,7 +962,7 @@
                 var API = qs.stringify(
                     data
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/directPublish/getList/", API).then(
+                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/getList", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -995,6 +1008,10 @@
                 })
             },
             submitForm(formName) {
+
+
+
+
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         //如何判断是新增还是更新;
@@ -1004,6 +1021,8 @@
 
                         } else {
                             // this.findFn(this.addFn)
+                            this.addForm.publishST = this.dealTime(this.addForm.publishST)
+                            this.addForm.publishET = this.dealTime(this.addForm.publishET)
                             this.addFn();
 
                         }
@@ -1034,8 +1053,8 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
-                this.handleSearch()
+                this.formInline.size = val;
+                this.handleSearch();
             },
             deleteRow(index) {
                 this.textarry.splice(index, 1);
@@ -1044,7 +1063,7 @@
                 var vm = this;
                 let idx = vm.addForm.idx;
                 if (!idx) {
-                    vm.$message('请选择栏位')
+                    vm.$message('请选着栏位')
                     return
                 }
                 // if (index > 1) {
@@ -1112,9 +1131,13 @@
             showDetails(index, row) {
 
                 var vm = this;
+
+                // vm.showDetailsDog = true;
+                // return
+
                 vm.$store.dispatch('LOAD', true);
                 vm.objdetail = row.objectno;
-                axios.post("http://" + vm.$store.state.common.server + "/business/directPublish/findByRule",
+                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/findByRule",
                     qs.stringify({
                         ruleid: row.ruleid
                     })
@@ -1203,13 +1226,12 @@
                 });
             },
             // 下拉列表接口
-            apiFn(typeCode, channel, arry) {
+            apiFn(obj, arry) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListWithoutPage", qs.stringify({
-                    enabled: 1,
-                    type_code: typeCode,
-                    channel: channel
-                })).then(function (res) {
+                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
+                    qs.stringify(
+                        obj
+                    )).then(function (res) {
                     var code = res.data.retCode;
 
                     setTimeout(() => {
@@ -1277,9 +1299,10 @@
     }
 </script>
 <style>
-    .showimg{
-        max-width:500px
+    .showimg {
+        max-width: 300px;
     }
+
     .el-input__icon+.el-input__inner {
         padding-right: 10px;
     }

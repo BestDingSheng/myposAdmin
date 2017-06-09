@@ -16,18 +16,20 @@
                     </el-select>
                 </el-form-item>
                 -->
-                <el-form-item label="编辑方式" prop="contenttype" label-width="90px">
+                <el-form-item label="业务区域" prop="contenttype" label-width="90px">
                     <el-select v-model="formInline.contenttype" placeholder="请选择">
                         <el-option label="定向业务下" value="MULTI"></el-option>
                         <el-option label="定向业务上" value="SIMPLE"></el-option>
                     </el-select>
                 </el-form-item>
+                <!--
                 <el-form-item label="是否可用" prop="enable" label-width="90px">
                     <el-select v-model="formInline.enable" placeholder="请选择">
                         <el-option label="可用" value="1"></el-option>
                         <el-option label="禁用" value="2"></el-option>
                     </el-select>
                 </el-form-item>
+                -->
             </el-form>
         </el-col>
         <!--查询-->
@@ -43,19 +45,15 @@
             <el-table :data="tableData" border>
                 <el-table-column fixed type="index" label="序号" width="80">
                 </el-table-column>
-                <el-table-column prop="title" label="标题" width="160">
+                <el-table-column prop="title" label="标题" width="130px">
                 </el-table-column>
-                <el-table-column prop="content" label="内容" width="160">
+                <el-table-column prop="content" label="内容" width="250px">
                 </el-table-column>
-                <el-table-column prop="contenttype" :formatter="testContent" label="编辑方式" width="120">
+                <el-table-column prop="contenttype" :formatter="testContent" label="业务区域" width="130px">
                 </el-table-column>
-                <el-table-column prop="createtime" label="创建时间" width="200">
+                <el-table-column prop="createtime" label="创建时间" width="200px">
                 </el-table-column>
-                <el-table-column prop="createuser" label="创建人" width="140">
-                </el-table-column>
-                <el-table-column prop="updatetime" label="修改时间" width="200">
-                </el-table-column>
-                <el-table-column prop="updateuser" label="修改人" width="140">
+                <el-table-column prop="createuser" label="创建人" width="120px">
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="150px">
                     <span>
@@ -67,8 +65,8 @@
         </el-col>
         <!--分页-->
         <el-col :span="24" class="pagination">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :total="totalElements">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-sizes='[10,20,30,50,100]'
+                layout="total, sizes, prev, pager, next" :total="totalElements" :page-size="size">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -76,7 +74,7 @@
             <el-row :gutter="24">
                 <el-col :span="24">
                     <el-form ref="addForm" :rules="addRules" :model="addForm" label-width="100px">
-                        <el-form-item label="编辑方式：" prop="contenttype">
+                        <el-form-item label="业务区域：" prop="contenttype">
                             <el-radio-group v-model="addForm.contenttype" @change="change">
                                 <el-radio label="MULTI">定向业务下</el-radio>
                                 <el-radio label="SIMPLE">定向业务上</el-radio>
@@ -88,7 +86,7 @@
                         <el-form-item label="Icon图片" class="adCon" prop="title_logoImage">
                             <el-input v-model="addForm.title_logoImage" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
                             <el-upload :with-credentials='true' class="upload-demo" ref='titleUpload' drag accept="image/png,image/jpeg" :action="'http://'+this.$store.state.common.server+'/business/fileUpload/uploadfileToServer'"
-                                type="drag" mutiple :on-change='onChange'  :before-upload='dingding' :on-preview="handlePreview" :on-remove="handleRemove"
+                                type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove"
                                 :on-success="uploadSuc">
                                 <i class="el-icon-upload"></i>
                                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -221,7 +219,7 @@
             <el-row :gutter="24">
                 <el-col :span="24">
                     <el-form ref="editForm" :rules="addRules" :model="editForm" label-width="100px">
-                        <el-form-item label="编辑方式：" prop="contenttype">
+                        <el-form-item label="业务区域：" prop="contenttype">
                             <el-radio-group v-model="editForm.contenttype" @change="change">
                                 <el-radio label="MULTI">定向业务下</el-radio>
                                 <el-radio label="SIMPLE">定向业务上</el-radio>
@@ -448,7 +446,16 @@
                         callback();
                     }
                 } else {
-                    callback()
+                    let str ='http://www.xxxxx.xxx'
+                    let reg =
+                        /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+                    if (reg.test(value)) {
+                        callback()
+
+                    } else {
+                        callback(new Error(str))
+
+                    }
                 }
             }
 
@@ -614,7 +621,8 @@
                 formInline: {
                     title: '',
                     content: '',
-                   // idx: '',
+                    size:10,
+                    // idx: '',
                     contenttype: '',
                     enable: '',
                     page: ''
@@ -635,7 +643,7 @@
                     detail_url_title: '',
                     busiList_id: '',
                     busiList_version: '',
-                  //  idx: '',
+                    //  idx: '',
                     enable: '1',
                     contenttype: 'MULTI'
                 },
@@ -654,7 +662,7 @@
                     detail_url_title: '',
                     busiList_id: '',
                     busiList_version: '',
-                  //  idx: '',
+                    //  idx: '',
                     enable: '1',
                     contenttype: 'MULTI',
                     directbusno: ''
@@ -856,10 +864,6 @@
                     console.log(error)
                 })
             },
-            dingding(){
-                alert(11111)
-                console.log(arguments)
-            },
             test(row, column) {
                 if (row.enable == 1) {
                     return "可用"
@@ -1047,6 +1051,8 @@
             // },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
 
             handleCurrentChange(val) {

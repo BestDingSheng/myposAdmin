@@ -77,7 +77,7 @@
         <!--分页-->
         <el-col :span="24" class="pagination">
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
-                layout="total, sizes, prev, pager, next" :page-sizes='[size]' :total="totalElements">
+                layout="total, sizes, prev, pager, next" :page-sizes='[10,20,30,50,100]' :total="totalElements">
             </el-pagination>
         </el-col>
         <!--新建-->
@@ -208,7 +208,9 @@
         <!--二级弹窗-->
         <el-dialog title="选择" v-model="dialogTableVisible" :close-on-click-modal='false'>
             <el-table :data="gridData" highlight-current-row @current-change="handleCurrent">
+                <!--
                 <el-table-column property="idx" label="位置" width="80"></el-table-column>
+                -->
                 <el-table-column property="createtime" label="创建时间"></el-table-column>
                 <el-table-column property="directbusno" label="ID" width="260"></el-table-column>
                 <el-table-column property="title" label="title"></el-table-column>
@@ -217,11 +219,11 @@
         <!--详情table-->
         <el-dialog title="详情" v-model="showDetailsDog" :close-on-click-modal='false'>
             <el-table :data="showDetailsData">
-                <el-table-column property="title" label="标题"></el-table-column>
-                <el-table-column property="content" label="内容"></el-table-column>
-                <el-table-column property="idx" label="栏位选择"></el-table-column>
-                <el-table-column property="contenttype" label="编辑方式"></el-table-column>
-                <el-table-column property="createtime" label="创建时间" width="250"></el-table-column>
+                <el-table-column property="t.title" label="标题"></el-table-column>
+                <el-table-column property="t.content" label="内容"></el-table-column>
+                <el-table-column property="idx" label="栏位选择" width='130px'></el-table-column>
+                <el-table-column property="t.contenttype" label="编辑方式" width='130px'></el-table-column>
+                <el-table-column property="t.createtime" label="创建时间" width="180"></el-table-column>
             </el-table>
         </el-dialog>
     </el-row>
@@ -264,6 +266,7 @@
                     objectno: "",
                     platgroupno: "",
                     pvgroupno: "",
+                    size:10,
                     // enable: "1",
                     page: ''
                 },
@@ -278,7 +281,7 @@
                     pvgroupno: "",
                     enable: "1",
                     directbusno: [],
-                    idxs:[]
+                    idxs: []
                 },
                 editForm: {
                     vergroupno: "",
@@ -502,23 +505,25 @@
             },
             updateFn() { //修改
                 var vm = this;
-                let idxs ;
+                let idxs = [];
                 for (var i = 0; i < this.textarry.length; i++) {
                     if (i == 0) {
                         continue
                     } else {
                         vm.addForm.directbusno.push(vm.textarry[i].bianhao)
-                        idxs = vm.textarry[i].text
+                        idxs.push(vm.textarry[i].text)
                     }
                 };
                 if (vm.addForm.directbusno == '') {
                     vm.errMsg('请添加业务')
                     return;
                 }
+                // console.log(idxs);
+                // return;
                 axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
                     ruleid: vm.editForm.ruleid,
                     directbusno: vm.addForm.directbusno,
-                    idxs:idxs,                                  
+                    idxs: idxs,
                     enable: '1'
                 })).then(function (res) {
                     vm.dialogEdit = false;
@@ -633,6 +638,8 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
+                this.formInline.size=val;
+                this.handleSearch();
             },
             deleteRow(index) {
                 this.textarry.splice(index, 1);
@@ -655,7 +662,7 @@
 
                 vm.$store.dispatch('LOAD', true);
 
-            //  2017年05月12日18:06:46  周五做到这里  替换了 接口 这里报错
+                //  2017年05月12日18:06:46  周五做到这里  替换了 接口 这里报错
                 axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getListForPublish", qs.stringify({
                     idx: vm.textarry[index].text
                     // idx: index+1
@@ -774,8 +781,8 @@
                                     for (var i = 0; i < res.data.retData.length; i++) {
                                         vm.textarry.push({
                                             text: res.data.retData[i].idx,
-                                            id: res.data.retData[i].title,
-                                            bianhao: res.data.retData[i].directbusno,
+                                            id: res.data.retData[i].t.title,
+                                            bianhao: res.data.retData[i].t.directbusno,
                                         })
 
                                     }

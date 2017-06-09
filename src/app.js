@@ -177,17 +177,22 @@ new Vue({
     axios.get("http://" + vm.$store.state.common.server + "/getUserInfo",
       qs.stringify({})).then(function (res) {
       let code = res.data.retCode;
-      const msg = res.data.msg;
+      let data = res.data.retData;
+      const msg = res.data.retMsg;
       setTimeout(() => {
-        if (code == "110500") {
-          alert(1111);
+
+        if(code =='000000'){
+          vm.$store.dispatch('roleName', data.roleName);
+        }
+
+        if (code == "110500") {        
           vm.$message('请重新登陆')
           localStorage.setItem('username', '')
           vm.$router.replace({
             path: '/login'
           })
         } else if (code == "001020") {
-          vm.$message('请重新登陆')
+          vm.$message(msg)
           localStorage.setItem('username', '')
           vm.$router.replace({
             path: '/login'

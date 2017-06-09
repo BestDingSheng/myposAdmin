@@ -30,10 +30,13 @@ import qdgl from './view/ywgl/qdgl.vue'
 import bbgl from './view/ywgl/bbgl.vue'
 import dxyw from './view/ywgl/dxyw.vue'
 import dxywfb from './view/ywgl/dxywfb.vue'
-
 import dxywglgz from './view/ywgl/dxywgzgl.vue'
 import dxgl from './view/ywgl/dxgl.vue'
 import sjzdgl from './view/ywgl/sjzdgl.vue'
+
+import gggl from './view/ywgl/gggl.vue'
+import ggyw from './view/ywgl/ggyw.vue'
+import shxxcx from './view/ywgl/shxxcx.vue'
 
 import jsgl from './view/htgl/jsgl.vue' 
 import yhgl from './view/htgl/yhgl.vue'
@@ -48,7 +51,16 @@ const routes = [{
     path: '',
     component: Home
   }, 
-  
+    {
+    name: '公共业务',
+    path: '/ywgl/ggyw',
+    component: ggyw
+  }, 
+    {
+    name: '广告管理',
+    path: '/ywgl/gggl',
+    component: gggl
+  }, 
   
   {
     name: '平台管理',
@@ -59,6 +71,11 @@ const routes = [{
     name: '渠道管理',
     path: '/ywgl/qdgl',
     component: qdgl
+  },
+  {
+    name: '商户信息查询',
+    path: '/ywgl/shxxcx',
+    component: shxxcx
   },
   {
     name: '版本管理',

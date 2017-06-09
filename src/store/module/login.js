@@ -2,7 +2,8 @@ const state = {
   username: '',
   menuData: [],
   permissions: [],
-  islogin: false
+  islogin: false,
+  roleName: ''
 }
 import axios from 'axios'
 const actions = {
@@ -20,6 +21,11 @@ const actions = {
     commit
   }, permissions) {
     commit('permissions', permissions)
+  },
+  roleName({
+    commit
+  }, roleName) {
+    commit('roleName', roleName)
   }
 }
 const mutations = {
@@ -34,6 +40,9 @@ const mutations = {
   },
   islogin(state, islogin) {
     state.islogin = islogin
+  },
+  roleName(state, roleName) {
+    state.roleName = roleName
   }
 }
 

@@ -271,17 +271,7 @@
     }
 </script>
 <style lang="sass" rel="stylesheet/scss">
-    .login {
-        background: url(/src/assets/images/bg.png) no-repeat center;
-        background-size: cover;
-        height: 100%;
-        .title {
-            font-family: "微软雅黑";
-            font-weight: normal;
-            color: #666;
-            margin-top: 0px;
-            margin-bottom: 20px;
-        }
+
         .box {
             width: 400px;
             height: 350px;
@@ -324,7 +314,7 @@
                 }
             }
         }
-    }
+
 
     .login .login-ruleForm .el-input-group__append img {
         height: 34px;

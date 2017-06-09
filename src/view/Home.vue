@@ -126,12 +126,14 @@
                 }
             }
         },
-        computed() {
-
+        computed:{
         },
-        created(){
-           // alert(111);
-        },//
+        created() {
+           
+        }, //
+        updated(){
+          
+        },
         mounted() {
             //页面挂在完成之后加载首页内容
             var vm = this;
@@ -168,7 +170,8 @@
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.loginInfos = data;
-                            localStorage.setItem('roleName',data.roleName);
+                            // localStorage.setItem('roleName',data.roleName);
+                            vm.$store.dispatch('roleName', data.roleName);
                         } else {
                             vm.$message({
                                 type: 'error',
