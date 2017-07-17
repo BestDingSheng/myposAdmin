@@ -211,8 +211,14 @@
                 <!--
                 <el-table-column property="idx" label="位置" width="80"></el-table-column>
                 -->
-                <el-table-column property="createtime" label="创建时间"></el-table-column>
-                <el-table-column property="directbusno" label="ID" width="260"></el-table-column>
+                <el-table-column property="createtime" label="创建时间" width='200'></el-table-column>
+             <!-- <el-table-column property="directbusno" label="ID" width="260"></el-table-column>
+             -->
+                <el-table-column label="ID">
+                    <template scope="scope">    
+                        <img :src="scope.row.title_logoImage" width='50' alt="">
+                    </template>
+                </el-table-column>
                 <el-table-column property="title" label="title"></el-table-column>
             </el-table>
         </el-dialog>
@@ -266,7 +272,7 @@
                     objectno: "",
                     platgroupno: "",
                     pvgroupno: "",
-                    size:10,
+                    size: 10,
                     // enable: "1",
                     page: ''
                 },
@@ -550,7 +556,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
                         setTimeout(() => {
                             if (code == "000000") {
                                 vm.vergroupno = res.data.retData.cv;
@@ -559,7 +565,7 @@
                                 vm.pvgroupno = res.data.retData.pv;
 
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -579,7 +585,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
 
                         setTimeout(() => {
                             vm.$store.dispatch('LOAD', false);
@@ -593,7 +599,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -638,7 +644,7 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
             deleteRow(index) {
@@ -806,7 +812,11 @@
 
     }
 </script>
-<style>
+<style scope>
+    .el-dialog--tiny {
+        width: 40%;
+    }
+
     .flexTable {
         border-bottom: 1px #dfe6ec solid;
         padding: 0;

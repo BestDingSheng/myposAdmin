@@ -45,161 +45,7 @@
                 visible: false,
                 dialogFormVisible: false,
                 currentPathName: '首页',
-                menuData: [
-                    // {
-                    //     label: '商户通',
-                    //     children: [{
-                    //         label: '对象管理',
-                    //         children: [{
-                    //             label: '对象维护',
-                    //             link: '/sht/dxwh'
-                    //         }]
-                    //     }, {
-                    //         label: '消息管理',
-                    //         children: [{
-                    //             label: '消息模板',
-                    //             link: '/sht/xxmb'
-                    //         }, {
-                    //             label: '消息发布',
-                    //             link: '/sht/xxfb'
-                    //         }, {
-                    //             label: '消息发布新版',
-                    //             link: '/sht/xxfbnew'
-                    //         }]
-                    //     }, {
-                    //         label: '广告管理',
-                    //         children: [{
-                    //             label: '广告发布',
-                    //             link: '/sht/ggfb'
-                    //         }]
-                    //     }, {
-                    //         label: '业务管理',
-                    //         children: [{
-                    //             label: '业务发布',
-                    //             link: '/sht/ywfb'
-                    //         }]
-                    //     }],
-                    //     authLevel: 1
-                    // },
-                    // {
-                    //     label: '收款宝',
-                    //     children: [{
-                    //         label: '对象管理',
-                    //         children: [{
-                    //             label: '对象维护',
-                    //             link: '/skb/dxwh'
-                    //         }]
-                    //     }, {
-                    //         label: '消息管理',
-                    //         children: [{
-                    //             label: '消息模板',
-                    //             link: '/skb/xxmb'
-                    //         }, {
-                    //             label: '消息发布',
-                    //             link: '/skb/xxfb'
-                    //         }, {
-                    //             label: '消息发布新版',
-                    //             link: '/skb/xxfbNew'
-                    //         }]
-                    //     }, {
-                    //         label: 'APP更新管理',
-                    //         children: [{
-                    //             label: '配置更新提示',
-                    //             link: '/skb/pzgxts'
-                    //         }]
-                    //     }, {
-                    //         label: '广告管理',
-                    //         children: [{
-                    //             label: '广告发布',
-                    //             link: '/skb/ggfb'
-                    //         }]
-                    //     }, {
-                    //         label: '业务管理',
-                    //         children: [{
-                    //             label: '公共业务发布',
-                    //             link: '/skb/ggywfb'
-                    //         }, {
-                    //             label: '定向业务发布',
-                    //             link: '/skb/dxywfb'
-                    //         }, {
-                    //             label: '定向业务发布新版',
-                    //             link: '/skb/dxywfbnew'
-                    //         }, {
-                    //             label: '平台管理',
-                    //             link: '/skb/ptgl'
-
-                    //         }]
-                    //     }, {
-                    //         label: '活动专区',
-                    //         children: [{
-                    //             label: '活动管理',
-                    //             link: '/skb/hdgl'
-                    //         }]
-                    //     }, {
-                    //         label: '银行管理',
-                    //         children: [{
-                    //             label: '银行列表查询',
-                    //             link: '/skb/yhlbcx'
-                    //         }, {
-                    //             label: '银行卡审核',
-                    //             link: '/skb/yhksh'
-                    //         }]
-                    //     }],
-                    //     authLevel: 2
-                    // },
-
-
-                    /*
-                    {
-                        label: '业务管理',
-                        children: [{
-                                label: '平台管理',
-                                link: '/ywgl/ptgl',
-                            }, {
-                                label: '渠道管理',
-                                link: '/ywgl/qdgl'
-                            }, {
-                                label: '版本管理',
-                                link: '/ywgl/bbgl',
-                            }, {
-                                label: '定向业务',
-                                link: '/ywgl/dxyw'
-                            }, {
-                                label: "定向业务管理规则",
-                                link: "/ywgl/dxywgzgl",
-                            }, {
-                                label: "对象管理",
-                                link: "/ywgl/dxgl",
-                            },
-                            {
-                                label: '数据字典管理',
-                                link: '/ywgl/sjzdgl'
-                            },
-
-                        ],
-                        authLevel: 1
-                    }, {
-                        label: '后台管理',
-                        children: [{
-                            label: '角色管理',
-                            link: '/htgl/jsgl'
-                        }, {
-                            label: '用户管理',
-                            link: '/htgl/yhgl'
-                        }, {
-                            label: '菜单管理',
-                            link: '/htgl/cdgl'
-                        }]
-                    }
-                    */
-
-                ],
-                // defaultMenuProps: {
-                //     children: 'children',
-                //     label: 'label',
-                //     link: 'link'
-                // },
-
+                menuData: [],
                 defaultMenuProps: {
                     children: 'children',
                     label: 'sysresname',
@@ -223,10 +69,8 @@
         computed: {
             roleName() {
                 //return localStorage.getItem('roleName')
-
-
                 return this.$store.state.login.roleName;
-                
+
             }
         },
         mounted() {
@@ -238,10 +82,6 @@
                 this.currentPathName = localStorage.getItem("title");
             }
             this.username = this.$store.state.login.username;
-            //            if(!this.$store.state.login.menuData){
-            //                this.$store.dispatch('setMenuData',JSON.parse(read('menuData')))
-            //            }
-            //            this.menuData=this.$store.state.login.menuData;
 
             this.menuFn();
         },

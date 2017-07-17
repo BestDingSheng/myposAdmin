@@ -76,8 +76,9 @@
                     <el-form ref="addForm" :rules="addRules" :model="addForm" label-width="100px">
                         <el-form-item label="业务区域：" prop="contenttype">
                             <el-radio-group v-model="addForm.contenttype" @change="change">
-                                <el-radio label="MULTI">定向业务下</el-radio>
                                 <el-radio label="SIMPLE">定向业务上</el-radio>
+                                <el-radio label="MULTI">定向业务下</el-radio>
+
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="标题文本" prop="title">
@@ -221,8 +222,8 @@
                     <el-form ref="editForm" :rules="addRules" :model="editForm" label-width="100px">
                         <el-form-item label="业务区域：" prop="contenttype">
                             <el-radio-group v-model="editForm.contenttype" @change="change">
-                                <el-radio label="MULTI">定向业务下</el-radio>
                                 <el-radio label="SIMPLE">定向业务上</el-radio>
+                                <el-radio label="MULTI">定向业务下</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="标题文本" prop="title">
@@ -446,7 +447,7 @@
                         callback();
                     }
                 } else {
-                    let str ='http://www.xxxxx.xxx'
+                    let str = 'http|https://www.xxxxx.xxx'
                     let reg =
                         /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
                     if (reg.test(value)) {
@@ -621,7 +622,7 @@
                 formInline: {
                     title: '',
                     content: '',
-                    size:10,
+                    size: 10,
                     // idx: '',
                     contenttype: '',
                     enable: '',
@@ -989,7 +990,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
                         setTimeout(() => {
                             if (code == "000000") {
                                 vm.$store.dispatch('LOAD', false);
@@ -997,12 +998,11 @@
                                 vm.size = res.data.retData.size;
                                 vm.number = parseInt(res.data.retData.number + 1)
                                 vm.totalElements = res.data.retData.totalElements;
-
                                 var data = res.data.retData.content;
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -1051,7 +1051,7 @@
             // },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
 

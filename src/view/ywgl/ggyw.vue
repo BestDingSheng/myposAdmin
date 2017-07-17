@@ -26,7 +26,7 @@
                         <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                
+
                 <el-form-item label="状态" prop="auditStatus" label-width="">
                     <el-select v-model="formInline.auditStatus" placeholder="请选择">
                         <el-option label="审核通过" value="PASS"></el-option>
@@ -56,15 +56,15 @@
                 </el-table-column>
 
                 <el-table-column prop="idx" label="栏位" width='70'></el-table-column>
-                <el-table-column prop="directbusno.title" label="业务名称" width='120'></el-table-column>
-                
-                
+                <el-table-column prop="directbusno.title" label="业务名称" width='140'></el-table-column>
+
+
                 <el-table-column prop="pvgroupno.pvs" label="渠道"></el-table-column>
                 <el-table-column prop="vergroupno.vers" label="版本"></el-table-column>
                 <el-table-column prop="platgroupno.plats" label="平台"></el-table-column>
 
 
-                <el-table-column prop="auditStatusName" label="状态">
+                <el-table-column prop="auditStatusName" label="状态" width='120'>
                     <template scope="scope">
                         <div :class="{ success:scope.row.auditStatusName=='审核通过',error:scope.row.auditStatusName=='驳回',warning:scope.row.auditStatusName=='审核中'}">{{ scope.row.auditStatusName }}</div>
                     </template>
@@ -75,6 +75,7 @@
 
                 <el-table-column inline-template prop='enable' fixed="right" label="维护" width="160px">
                     <span>
+                           <el-button  type="text" v-if='row.auditStatusName=="驳回" && check' size="small" @click="handleDelete($index, row)">删除</el-button>
 
                          <el-button  type="text" v-if='row.auditStatusName=="审核中" && check' size="small" @click="audit($index, row)">审核</el-button>
 
@@ -96,12 +97,10 @@
         <!--新建-->
         <el-dialog title="新建" v-model="dialogAdd" :close-on-click-modal='false' custom-class="dialogAdd" size="large">
             <el-form :rules="addRules" label-width="100px" :model="addForm" ref="addForm">
-
-
                 <el-row>
                     <el-col :span='12'>
                         <el-form-item label="渠道选择" prop="pvgroupno">
-                            <el-select v-model="addForm.pvgroupno" placeholder="请选择">
+                            <el-select v-model="addForm.pvgroupno" placeholder="请选择" @change='selectFn'>
                                 <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
@@ -110,7 +109,7 @@
                 <el-row>
                     <el-col :span='12'>
                         <el-form-item label="版本选择" prop="vergroupno">
-                            <el-select v-model="addForm.vergroupno" placeholder="请选择">
+                            <el-select v-model="addForm.vergroupno" placeholder="请选择" @change='selectFn'>
                                 <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
@@ -119,7 +118,7 @@
                 <el-row>
                     <el-col :span='12'>
                         <el-form-item label="平台选择" prop="platgroupno">
-                            <el-select v-model="addForm.platgroupno" placeholder="请选择">
+                            <el-select v-model="addForm.platgroupno" placeholder="请选择" @change='selectFn'>
                                 <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
@@ -129,7 +128,7 @@
                     <el-col :span='12'>
                         <el-form-item label="栏位选择" prop="idx">
                             <el-select v-model="addForm.idx" placeholder="请选择">
-                                <el-option v-for="item in lanwei" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                                <el-option v-for="item in weizhi" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
@@ -174,7 +173,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                        <el-form-item label="跳转页面标题" label-width="100px" prop='detail_url_title'>
+                        <el-form-item label="跳转页面标题" label-width="100px" prop='content_url_title'>
                             <el-input type="text" placeholder="跳转页面标题" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url_title"></el-input>
                         </el-form-item>
                     </el-col>
@@ -203,52 +202,54 @@
         </el-dialog>
 
         <!-- 详情 -->
-        <el-dialog title="查看详情" v-model="showDetailsDog" :close-on-click-modal='false' custom-class="showDetailsDog" size="large">
+        <el-dialog :title="isaudit?'审核':'查看详情'" @close='close' v-model="showDetailsDog" :close-on-click-modal='false' custom-class="showDetailsDog"
+            size="large">
             <el-form :rules="addRules" label-width="100px" :model="detailedFrom" ref="detailedFrom">
-                <!-- 
-                <el-row>
-                    <el-col :span='12'>
-                        <el-form-item label="栏位" prop="idx">
-                            <el-select v-model="detailedFrom.idx" placeholder="请选择">
-                                <el-option v-for="item in lanwei" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                            </el-select>
-                        </el-form-item>
-                    </el-col>
-                </el-row>
 
-                <el-row>
+                <el-row v-if='isaudit'>
                     <el-col :span='12'>
                         <el-form-item label="渠道选择" prop="pvgroupno">
-                            <el-select v-model="detailedFrom.pvgroupno" placeholder="请选择">
+                            <el-select v-model="detailedFrom.pvgroupno" :disabled='true' placeholder="请选择" @change='selectFn'>
                                 <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row>
+                
+                <el-row v-if='isaudit'>
                     <el-col :span='12'>
                         <el-form-item label="版本选择" prop="vergroupno">
-                            <el-select v-model="detailedFrom.vergroupno" placeholder="请选择">
+                            <el-select v-model="detailedFrom.vergroupno" :disabled='true' placeholder="请选择" @change='selectFn'>
                                 <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row v-if='isaudit'>
                     <el-col :span='12'>
                         <el-form-item label="平台选择" prop="platgroupno">
-                            <el-select v-model="detailedFrom.platgroupno" placeholder="请选择">
+                            <el-select v-model="detailedFrom.platgroupno" :disabled='true' placeholder="请选择" @change='selectFn'>
                                 <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-row v-if='isaudit'>
+                    <el-col :span='12'>
+                        <el-form-item label="栏位选择" prop="idx">
+                            <el-select v-model="detailedFrom.idx" :disabled='true' placeholder="请选择">
+                                <el-option v-for="item in weizhi" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <!---->
 
-                -->
+
                 <el-row>
                     <el-col :span='12'>
                         <el-form-item label="业务名称" prop="title">
-                            <el-input v-model="detailedFrom.title" placeholder="请输入"></el-input>
+                            <el-input v-model="detailedFrom.title" :disabled='true' placeholder="请输入"></el-input>
 
                         </el-form-item>
                     </el-col>
@@ -267,9 +268,7 @@
                 <el-row :gutter="24" v-if="detailedFrom.open_type=='open_url'">
                     <el-col :span="4">
                         <el-form-item label="" prop="open_type" label-width="10px">
-
                             <el-radio class="radio" v-model="detailedFrom.open_type" label="open_url">跳转网页</el-radio>
-
                         </el-form-item>
                     </el-col>
                     <el-col :span="7">
@@ -382,20 +381,55 @@
     export default {
         data() {
             var content_url = (rule, value, callback) => { // 跳转url
-                if (value == '') {
-                    callback();
-                } else {
-                    let str = 'http://www.xxxxx.xxx'
-                    let reg =
-                        /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
-                    if (reg.test(value)) {
-                        callback()
-                    } else {
-                        callback(new Error(str))
 
+                if (this.addForm.open_type == 'open_url') {
+                    if (value == '') {
+                        callback(new Error('请输入跳转url'));
+
+                    } else {
+                        let str = 'http|https://www.xxxxx.xxx'
+                        let reg =
+                            /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+                        if (reg.test(value)) {
+                            callback()
+                        } else {
+                            callback(new Error(str))
+
+                        }
                     }
+                } else {
+                    callback()
                 }
+
             }
+
+            var content_url_title = (rule, value, callback) => { // 跳转url
+
+                if (this.addForm.open_type == 'open_url') {
+                    if (value == '') {
+                        callback(new Error('请输入标题'));
+                    } else {
+                        callback()
+                    }
+                } else {
+                    callback()
+                }
+
+            }
+            var content_business = (rule, value, callback) => { // 跳转url
+
+                if (this.addForm.open_type == 'open_business') {
+                    if (value == '') {
+                        callback(new Error('请选择跳转业务'));
+                    } else {
+                        callback()
+                    }
+                } else {
+                    callback()
+                }
+
+            }
+
             return {
                 gridData: [],
                 dtailgridData: [],
@@ -490,8 +524,26 @@
                     content_image: ''
                 },
                 addRules: {
+                    open_type: [{
+                        required: true,
+                        message: "请选择业务",
+                        trigger: "change"
+                    }],
+                    content_image: [{
+                        required: true,
+                        message: "请选择图片",
+                        trigger: "change"
+                    }],
                     content_url: [{
                         validator: content_url,
+                        trigger: 'blur'
+                    }],
+                    content_url_title: [{
+                        validator: content_url_title,
+                        trigger: 'blur'
+                    }],
+                    content_business: [{
+                        validator: content_business,
                         trigger: 'blur'
                     }],
                     vergroupno: [{
@@ -637,9 +689,7 @@
 
             },
 
-
             idxsFn() {
-
                 var vm = this;
                 axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
                     qs.stringify({
@@ -669,9 +719,11 @@
 
             selectFn() {
 
+
                 let pvgroupno = this.addForm.pvgroupno;
                 let vergroupno = this.addForm.vergroupno;
                 let platgroupno = this.addForm.platgroupno;
+
                 this.addForm.idx = '';
                 if (!pvgroupno) {
 
@@ -692,7 +744,7 @@
                         channel: pvgroupno,
                         version: vergroupno,
                         platform: platgroupno,
-                        type_code: 'directBusIdx'
+                        type_code: 'commonDirectBusIdx'
 
                     })).then(function (res) {
                     var code = res.data.retCode;
@@ -829,6 +881,7 @@
                         if (code == "000000") {
                             vm.dialogAdd = false;
                             vm.$store.dispatch('LOAD', false);
+                            vm.$refs.titleUpload.clearFiles();
                             vm.$refs.addForm.resetFields()
 
                             // for (var item in vm.addForm) {
@@ -936,7 +989,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
                         setTimeout(() => {
                             if (code == "000000") {
                                 vm.vergroupno = res.data.retData.cv;
@@ -945,7 +998,7 @@
                                 vm.pvgroupno = res.data.retData.pv;
 
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败' + msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -1000,7 +1053,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
 
                         setTimeout(() => {
                             vm.$store.dispatch('LOAD', false);
@@ -1034,7 +1087,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败' + msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -1155,7 +1208,7 @@
                 this.showDetails(index, row);
 
             },
-
+            //  查看详情方法 
             showDetails(index, row) {
 
                 var vm = this;
@@ -1179,6 +1232,19 @@
                                     vm.detailedFrom[item] = res.data.retData[item];
                                     vm.operation[item] = res.data.retData[item]
                                 }
+
+                            // console.log(vm.detailedFrom)
+                            vm.detailedFrom.idx=row.idx;
+                            vm.detailedFrom.pvgroupno=row.pvgroupno.pvgroupno
+                            vm.detailedFrom.vergroupno=row.vergroupno.vergroupno
+                            vm.detailedFrom.platgroupno=row.platgroupno.platgroupno
+
+                           
+                
+                
+                            console.log(row);
+
+
 
                                 vm.showDetailsDog = true;
                                 vm.$store.dispatch('LOAD', false);
@@ -1226,7 +1292,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/directPublish/delete",
+                    axios.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/delete",
                         qs.stringify({
                             ruleid: row.ruleid
                         })

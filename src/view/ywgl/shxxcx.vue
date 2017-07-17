@@ -144,7 +144,7 @@
                     region:'',
                     RealName:'',
                     BlackInfo:'',
-                    size:10
+                    limit:10
                 },
                 // addForm: {
                 //     pvgroupno: '', //渠道ID
@@ -310,7 +310,7 @@
                 axios.post("http://" + vm.$store.state.common.server + "/business/merchantInfo/queryMerchant/", API).then(function (
                     res) {
                     var code = res.data.retCode;
-                    var message = res.data.retMsg;
+                    var msg = res.data.retMsg;
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.$store.dispatch('LOAD', false);
@@ -322,7 +322,7 @@
                             vm.tableData = data;
                             callback;
                         } else {
-                            vm.errMsg('查询失败');
+                            vm.errMsg('查询失败'+msg);
                             vm.$store.dispatch('LOAD', false);
                         }
                     }, 1000);
@@ -364,7 +364,7 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.limit=val;
                 this.handleSearch();
             },
             handleCurrentChange(val) {

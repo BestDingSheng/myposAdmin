@@ -173,41 +173,52 @@ new Vue({
   },
   created() {
     // 判断是否登陆 没有登陆重新登陆
-    const vm = this;
-    axios.get("http://" + vm.$store.state.common.server + "/getUserInfo",
-      qs.stringify({})).then(function (res) {
-      let code = res.data.retCode;
-      let data = res.data.retData;
-      const msg = res.data.retMsg;
-      setTimeout(() => {
 
-        if(code =='000000'){
-          vm.$store.dispatch('roleName', data.roleName);
-        }
+    let username = localStorage.getItem('username');
 
-        if (code == "110500") {        
-          vm.$message('请重新登陆')
-          localStorage.setItem('username', '')
-          vm.$router.replace({
-            path: '/login'
-          })
-        } else if (code == "001020") {
-          vm.$message(msg)
-          localStorage.setItem('username', '')
-          vm.$router.replace({
-            path: '/login'
-          })
-        } else {
+    if (username) {
 
-        }
-      }, 1000);
-    }).catch(function (error) {
-      vm.$message('登陆超时请重新登陆')
-      localStorage.setItem('username', '')
-      vm.$router.replace({
-        path: '/login'
+      const vm = this;
+      axios.get("http://" + vm.$store.state.common.server + "/getUserInfo",
+        qs.stringify({})).then(function (res) {
+        let code = res.data.retCode;
+        let data = res.data.retData;
+        const msg = res.data.retMsg;
+        setTimeout(() => {
+
+          if (code == '000000') {
+            vm.$store.dispatch('roleName', data.roleName);
+          }
+
+          if (code == "110500") {
+            // vm.$message('请重新登陆')
+            localStorage.setItem('username', '')
+            vm.$router.replace({
+              path: '/login'
+            })
+          } else if (code == "001020") {
+            vm.$message(msg)
+            localStorage.setItem('username', '')
+            vm.$router.replace({
+              path: '/login'
+            })
+          } else {
+
+          }
+        }, 1000);
+      }).catch(function (error) {
+        vm.$message('登陆超时请重新登陆')
+        localStorage.setItem('username', '')
+        vm.$router.replace({
+          path: '/login'
+        })
       })
-    })
+    }
+
+
+
+
+
   },
   render: h => h(App)
 }).$mount('#app')

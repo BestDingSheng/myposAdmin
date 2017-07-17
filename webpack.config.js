@@ -1,9 +1,14 @@
 const {
     resolve
 } = require('path')
+const path =require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+function resolveFile(dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 module.exports = {
     // 配置页面入口js文件
@@ -19,7 +24,8 @@ module.exports = {
         // filename: 'build.js'
         filename: '[name].js',
         // publicPath: process.env.NODE_ENV === 'production' ? '/mposmsNew' : '/'
-        
+        publicPath: '',
+
     },
     module: {
         /*
@@ -82,24 +88,40 @@ module.exports = {
                     use: ['css-loader', 'sass-loader', 'postcss-loader']
                 })
             },
+            // {
+            //     /*
+            //      匹配各种格式的图片和字体文件
+            //      */
+            //     test: /\.(png|jpg|jpeg|ico|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
+            //     /*
+            //      使用url-loader, 它接受一个limit参数, 单位为字节(byte)
+            //      当文件体积小于limit时, url-loader把文件转为Data URI的格式内联到引用的地方
+            //      */
+            //     use: [{
+            //         loader: 'url-loader',
+            //         options: {
+            //             //limit: 10000,
+            //             limit: 10000,
+            //             name: 'img/[name].[hash:7].[ext]'
+            //         }
+            //     }]
+            // },
             {
-                /*
-                 匹配各种格式的图片和字体文件
-                 */
-                test: /\.(png|jpg|jpeg|ico|gif|eot|ttf|woff|woff2|svg|svgz)(\?.+)?$/,
-                /*
-                 使用url-loader, 它接受一个limit参数, 单位为字节(byte)
-                 当文件体积小于limit时, url-loader把文件转为Data URI的格式内联到引用的地方
-                 */
-                use: [{
-                    loader: 'url-loader',
-                    options: {
-                        //limit: 10000,
-                        limit: 10000,
-                        name: 'img/[name].[hash:7].[ext]'
-                    }
-                }]
-            }
+                test: /\.(png|jpg|gif|svg|ico)(\?.*)?$/,
+                loader: 'file-loader',
+                options: {
+                    name: 'img/[name].[ext]?[hash]',
+                    limit: 10000
+                }
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: 'img/[name].[hash:7].[ext]'
+                }
+            },
         ]
     },
     /*
@@ -109,7 +131,8 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: resolve(__dirname, 'index.html'),
-            inject: 'true'
+            inject: 'true',
+            favicon: resolve(__dirname, 'src/assets/images/favicon.ico')
         }),
         new ExtractTextPlugin({
             filename: 'style.css',
@@ -144,7 +167,11 @@ module.exports = {
         historyApiFallback: true
     },
     resolve: {
-        extensions: ['.js', '.vue', '.css']
+        extensions: ['.js', '.vue', '.css'],
+        alias:{
+            // 'assets':resolveFile('src/assets'),
+            'assets':resolve(__dirname, 'src/assets')
+        }
     },
     // eval-source-map is faster for development
     //devtool: '#eval-source-map'

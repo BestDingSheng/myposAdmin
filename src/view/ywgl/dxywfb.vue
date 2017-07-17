@@ -59,14 +59,14 @@
                 <el-table-column type="index" label="序号" width='70'>
                 </el-table-column>
                 <el-table-column prop="idx" label="栏位" width='70'></el-table-column>
-                <el-table-column prop="directbusno.title" width='120' label="标题"></el-table-column>
-                <el-table-column prop="objectno.objname" width='120' label="对象"></el-table-column>
+                <el-table-column prop="directbusno.title" width='' label="标题"></el-table-column>
+                <el-table-column prop="objectno.objname" width='' label="对象"></el-table-column>
 
                 <el-table-column prop="pvgroupno.pvs" label="渠道">
                 </el-table-column>
                 <el-table-column prop="vergroupno.vers" label="版本">
                 </el-table-column>
-                <el-table-column prop="platgroupno.plats" label="平台">
+                <el-table-column prop="platgroupno.plats" label="平台" width=''>
                 </el-table-column>
                 <el-table-column prop="auditStatusName" label="状态" width='100'>
                     <template scope="scope">
@@ -93,7 +93,7 @@
         </el-col>
         <!--分页-->
         <el-col :span="24" class="pagination">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"  :current-page="number" :page-size="size"
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="number" :page-size="size"
                 layout="total, sizes, prev, pager, next" :page-sizes='[10,20,30,50,100]' :total="totalElements">
             </el-pagination>
         </el-col>
@@ -149,8 +149,12 @@
         <!--二级弹窗-->
         <el-dialog title="选择" v-model="dialogTableVisible" :close-on-click-modal='false'>
             <el-table :data="gridData" highlight-current-row @current-change="handleCurrent">
-                <el-table-column property="createtime" label="创建时间"></el-table-column>
-                <el-table-column property="directbusno" label="ID" width="260"></el-table-column>
+                <el-table-column property="createtime" label="创建时间" width='200'></el-table-column>
+                <el-table-column label="ID">
+                    <template scope="scope">
+                        <img :src="scope.row.title_logoImage" width='50' alt="">
+                    </template>
+                </el-table-column>
                 <el-table-column property="title" label="title"></el-table-column>
             </el-table>
         </el-dialog>
@@ -179,17 +183,18 @@
                         </el-form-item>
 
                         <div v-if="detailedFrom.contenttype=='SIMPLE'">
-                        
+
 
                             <el-row :gutter="24">
-                             <!--
+                                <!--
                                 <el-col :span='3' >
                                     <div style="margin-top:11px;" v-if='false'>跳转目标</div>
                                 </el-col>
-                              -->  
+                              -->
                                 <el-col :span='3'>
                                     </el-form-item prop='open_type'>
-                                    <el-radio class="radio" style="margin-top:11px;" v-if="detailedFrom.open_type=='open_business'" v-model="detailedFrom.open_type" label="open_business">打开业务</el-radio>
+                                    <el-radio class="radio" style="margin-top:11px;" v-if="detailedFrom.open_type=='open_business'" v-model="detailedFrom.open_type"
+                                        label="open_business">打开业务</el-radio>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span='12' v-if="detailedFrom.open_type=='open_business'">
@@ -203,7 +208,8 @@
                             <el-row :gutter="24">
                                 <el-col :span='3' :offset="0">
                                     <el-form-item label-width='0' prop='open_type'>
-                                        <el-radio class="radio" style="margin-bottom:10px;" v-if="detailedFrom.open_type!=='open_business'" v-model="detailedFrom.open_type" label="open_url">打开网页</el-radio>
+                                        <el-radio class="radio" style="margin-bottom:10px;" v-if="detailedFrom.open_type!=='open_business'" v-model="detailedFrom.open_type"
+                                            label="open_url">打开网页</el-radio>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span='9' v-if="detailedFrom.open_type=='open_url'">
@@ -400,7 +406,7 @@
                     pvgroupno: "",
                     directbusno: '',
                     auditStatus: '',
-                    size:10,
+                    size: 10,
                     startTime: '',
                     endTime: '',
                     // enable: "1",
@@ -589,7 +595,7 @@
             testding() {
                 console.log(arguments[0])
             },
-            sizeChange(size){
+            sizeChange(size) {
                 alert(size)
             },
 
@@ -891,7 +897,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
                         setTimeout(() => {
                             if (code == "000000") {
                                 vm.vergroupno = res.data.retData.cv;
@@ -900,7 +906,7 @@
                                 vm.pvgroupno = res.data.retData.pv;
 
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -953,7 +959,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
 
                         setTimeout(() => {
                             vm.$store.dispatch('LOAD', false);
@@ -987,7 +993,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败');
+                                vm.errMsg('查询失败'+msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -1034,7 +1040,7 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch()
             },
             deleteRow(index) {
@@ -1277,9 +1283,10 @@
     }
 </script>
 <style>
-    .showimg{
-        max-width:500px
+    .showimg {
+        max-width: 500px
     }
+
     .el-input__icon+.el-input__inner {
         padding-right: 10px;
     }

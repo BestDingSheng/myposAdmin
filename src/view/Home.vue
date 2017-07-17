@@ -165,7 +165,7 @@
                     "/getUserInfo",
                     qs.stringify({})).then(function (res) {
                     var code = res.data.retCode;
-                    var msg = res.data.msg;
+                    var msg = res.data.retMsg;
                     var data = res.data.retData;
                     setTimeout(() => {
                         if (code == "000000") {

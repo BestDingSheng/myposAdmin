@@ -436,7 +436,7 @@
                 axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getList/", API).then(function (
                     res) {
                     var code = res.data.retCode;
-                    var message = res.data.retMsg;
+                    var msg = res.data.retMsg;
 
                     setTimeout(() => {
                         if (code == "000000") {
@@ -450,7 +450,7 @@
                             vm.tableData = data;
                             callback;
                         } else {
-                            vm.errMsg('查询失败');
+                            vm.errMsg('查询失败'+msg);
                             vm.$store.dispatch('LOAD', false);
                         }
                     }, 1000);

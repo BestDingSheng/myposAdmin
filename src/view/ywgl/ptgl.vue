@@ -116,7 +116,7 @@
                     platgroupno: '',
                     plats: '',
                     enable: '',
-                    size:10,
+                    size: 10,
                     createtime: '',
                     page: ''
                 },
@@ -243,7 +243,7 @@
 
                             vm.handleSearch(vm.sucMsg('添加成功'));
                         } else {
-                            vm.errMsg('新增失败'+msg);
+                            vm.errMsg('新增失败' + msg);
                         }
                     }, 1000);
                 }).catch(function (error) {
@@ -257,12 +257,12 @@
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
-                    var msg = res.data.retData;                    
+                    var msg = res.data.retData;
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.handleSearch(vm.sucMsg('更新成功'));
                         } else {
-                            vm.errMsg('修改失败'+msg)
+                            vm.errMsg('修改失败' + msg)
                         }
                     }, 1000);
                 }).catch(function (error) {
@@ -280,7 +280,7 @@
                     function (
                         res) {
                         var code = res.data.retCode;
-                        var message = res.data.retMsg;
+                        var msg = res.data.retMsg;
 
                         setTimeout(() => {
                             vm.$store.dispatch('LOAD', false);
@@ -294,7 +294,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败'+msg);
+                                vm.errMsg('查询失败' + msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -335,12 +335,12 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
             handleCurrentChange(val) {
-                
-                    this.handleSearch(val, this.sucMsg('加载成功'));
+
+                this.handleSearch(val, this.sucMsg('加载成功'));
             },
             handleDelete(index, row) { // 删除方法
                 this.$confirm('确定删除此条数据吗?', '提示', {

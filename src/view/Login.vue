@@ -179,8 +179,7 @@
                                     vm.loginForm.authcode = '';
                                     vm.loginForm.passWord = '';
                                     vm.isinit = true;
-                                } 
-                                else {
+                                } else {
                                     vm.changeCode();
                                     vm.$message({
                                         type: 'error',
@@ -270,50 +269,58 @@
         }
     }
 </script>
-<style lang="sass" rel="stylesheet/scss">
+<style lang="sass" rel="stylesheet/scss" scope>
+    .el-input-group__append {
+        padding: 0;
+    }
 
-        .box {
-            width: 400px;
-            height: 350px;
-            background: #fff;
-            border-top: 2px solid #00b0e8;
-            padding: 45px 50px;
-            box-sizing: border-box;
+    .box {
+        width: 400px;
+        height: 350px;
+        background: #fff;
+        border-top: 2px solid #00b0e8;
+        padding: 45px 50px;
+        box-sizing: border-box;
+    }
+
+    .warp {
+        position: absolute;
+        width: 400px;
+        height: 406px;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+
+    .reset {
+        float: right;
+        color: #20a0ff;
+        letter-spacing: 3px;
+        cursor: pointer;
+    }
+
+    .login-btn {
+        .el-button--primary {
+            width: 100%;
+            font-family: "微软雅黑";
         }
-        .warp {
-            position: absolute;
-            width: 400px;
-            height: 406px;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin: auto;
+    }
+
+    .icon-input {
+        .el-input__inner {
+            padding-left: 30px;
         }
-        .reset {
-            float: right;
-            color: #20a0ff;
-            letter-spacing: 3px;
-            cursor: pointer;
-        }
-        .login-btn {
-            .el-button--primary {
-                width: 100%;
-                font-family: "微软雅黑";
+    }
+
+    .login-ruleForm {
+        .el-input-group__append {
+            img {
+                display: block;
             }
         }
-        .icon-input {
-            .el-input__inner {
-                padding-left: 30px;
-            }
-        }
-        .login-ruleForm {
-            .el-input-group__append {
-                img {
-                    display: block;
-                }
-            }
-        }
+    }
 
 
     .login .login-ruleForm .el-input-group__append img {
