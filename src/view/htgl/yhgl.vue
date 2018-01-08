@@ -34,13 +34,14 @@
         <el-col :span="24">
             <el-table :data="tableData" border>
                 <el-table-column align="center" prop="id" label="ID" min-width="80"></el-table-column>
-                <el-table-column align="center" prop="loginName" label="登陆账户" min-width='100'></el-table-column>
+                <el-table-column align="center" prop="loginName" label="登陆账户" min-width='140'></el-table-column>
                 <el-table-column align="center" prop="name" label="真实姓名" min-width="150"></el-table-column>
                 <el-table-column align="center" prop="roleName" label="角色" min-width="150"></el-table-column>
                 <el-table-column align="center" prop="remark" label="描述" min-width="150"></el-table-column>
                 <el-table-column align="center" prop="createdTime" label="创建时间" min-width="200"></el-table-column>
-                <el-table-column inline-template fixed="right" label="维护" width="200">
+                <el-table-column inline-template fixed="right" label="维护" width="280px">
                     <span>
+                          <el-button type='text' size="small" @click='resetPassword(row)' >密码重置</el-button>
                           <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
                           <el-button type="primary" size="small" @click="viewDetail($index, row)">详情</el-button>                          
                           <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button>
@@ -337,7 +338,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -423,7 +423,7 @@
                 formInline: {
                     name: '',
                     mobile: '',
-                    size:10,
+                    size: 10,
                     gender: '',
                     startTime: '',
                     endTime: '',
@@ -596,6 +596,24 @@
             }
         },
         methods: {
+
+            resetPassword(row) {
+                var me = this;
+                me.$store.dispatch('LOAD', true);
+                this.$http.post('http://' + me.$store.state.common.server +
+                        '/managerBam/user/resetPassword', qs.stringify({
+                            'idArr': row.id
+                        }))
+                    .then(function (res) {
+                        if (res.data.retCode == '000000') {
+                            setTimeout(() => {
+                                me.sucMsg('操作成功')
+                                me.$store.dispatch('LOAD', false);
+                            }, 1000)
+
+                        }
+                    });
+            },
             genderFn(val) {
                 if (val == '0') {
                     this.editForm.gender = '女'
@@ -632,7 +650,7 @@
             },
             userList() {
                 var me = this;
-                axios.get('http://' + me.$store.state.common.server +
+                this.$http.get('http://' + me.$store.state.common.server +
                         '/managerBam/authRole/findAllAuthrole', qs.stringify({
                             'sessionId': me.sId
                         }))
@@ -689,7 +707,7 @@
                 if (me.provinceData.length !== 0) {
                     return;
                 }
-                axios.post('http://' + me.$store.state.common.server +
+                this.$http.post('http://' + me.$store.state.common.server +
                         '/managerBam/areaProvince/selectAreaProvince', qs.stringify({
                             'sessionId': me.sId
                         }))
@@ -705,7 +723,7 @@
             loadCityData: function (provinceid) {
                 var pID = provinceid;
                 var me = this;
-                axios.post('http://' + me.$store.state.common.server +
+                this.$http.post('http://' + me.$store.state.common.server +
                         '/managerBam/areaCity/selectAreaCityByProvinceid', qs.stringify({
                             'provinceid': pID,
                             'sessionId': me.sId
@@ -722,7 +740,7 @@
             loadDistrictData: function (cityid) {
                 var cID = cityid;
                 var me = this;
-                axios.post('http://' + me.$store.state.common.server +
+                this.$http.post('http://' + me.$store.state.common.server +
                         '/managerBam/areaDistrict/selectAreaCityByCityId', qs.stringify({
                             'cityid': cID,
                             'sessionId': me.sId
@@ -745,7 +763,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/user/saveUser", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/user/saveUser", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -779,7 +797,7 @@
 
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/user/updateUser", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/user/updateUser", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -819,7 +837,7 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/user/findPageUser", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/user/findPageUser", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -835,7 +853,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败'+message);
+                                vm.errMsg('查询失败' + message);
                                 vm.$store.dispatch('LOAD', false);
                             }
                         }, 1000);
@@ -865,7 +883,7 @@
             },
             handleReset() { //重置
                 this.$refs.formInline.resetFields();
-                this.createdTimeRange=[];
+                this.createdTimeRange = [];
             },
             handleAdd() {
                 this.dialogAdd = true; // 点击新增 弹窗
@@ -881,7 +899,7 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
             handleCurrentChange(val) {
@@ -895,7 +913,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/managerBam/user/deleteUser",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/user/deleteUser",
                         qs.stringify({
                             idArr: row.id
                         })

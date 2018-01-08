@@ -9,18 +9,20 @@
             <div class="box">
                 <el-form v-if='isinit' :model="loginForm" :rules="loginRule" ref="loginForm" class="login-ruleForm">
                     <el-form-item prop="loginName" class="icon-input">
-                        <el-input placeholder="用户名" v-model="loginForm.loginName"></el-input>
+                        <el-input placeholder="用户名" auto-complete='no' v-model="loginForm.loginName"></el-input>
                         <span class="iconfonts icon-user"></span>
                     </el-form-item>
                     <el-form-item prop="passWord" class="icon-input">
-                        <el-input type="password" placeholder="密码" v-model="loginForm.passWord"></el-input>
+                        <el-input type="password" placeholder="密码" auto-complete='no' v-model="loginForm.passWord"></el-input>
                         <span class="iconfonts icon-pass"></span>
                     </el-form-item>
                     <el-form-item prop="authcode">
                         <el-input placeholder="请输入验证码" v-model="loginForm.authcode" v-on:keyup.enter='handleSubmit'>
                             <!--  <template slot="append"><img src="http://10.7.111.196:8080/mposms/Captcah.htm" v-on:click='test'></template>
                               -->
-                            <template slot="append"><img :src="src" v-on:click='changeCode'></template>
+                            <template slot="append">
+                                <img :src="src" v-on:click='changeCode'>
+                            </template>
                         </el-input>
                     </el-form-item>
                     <el-form-item>
@@ -86,7 +88,7 @@
             };
 
             return {
-                checked: false,
+                checked: true,
                 loginStatus: false,
                 isinit: true,
                 loginForm: {
@@ -147,6 +149,14 @@
                     }
                 }
             })
+
+
+            this.loginForm.loginName = sessionStorage.getItem('username') || '';
+            this.loginForm.passWord = sessionStorage.getItem('password') || '';
+            // this.loginForm.loginName = this.$cookiesFn.getCookie('username') || '';
+            // this.loginForm.passWord = this.$cookiesFn.getCookie('password') || '';
+
+
             //this.yanzhen();
 
         },
@@ -201,31 +211,37 @@
                 this.$refs.loginForm.validate((valid) => {
                     if (valid) {
                         var vm = this;
-                        // localStorage.setItem('username', this.loginForm.loginName);
-                        // this.$store.commit('setUserName', localStorage.username);
-                        // this.loginStatus = true;
 
-                        // vm.$router.push({
-                        //     path: '/'
-                        // });
                         this.$axios.post("http://" + vm.$store.state.common.server + '/loginCo', qs.stringify({
                                 loginName: vm.loginForm.loginName,
                                 passWord: vm.loginForm.passWord,
                                 authCode: vm.loginForm.authcode
                             })
-                            // , 
-                            // {
-                            //     headers: {
-                            //         "Content-Type": "application/json;charset=utf-8"
-                            //         //"Access-Control-Allow-Origin":"http://127.0.0.1:8088"
-                            //     },
-                            //     withCredentials: true
-                            // }
+
                         ).then(res => {
-                            console.log(res)
+
                             var code = res.data.retCode;
                             var msg = res.data.retMsg;
                             if (code == '000000') {
+                                sessionStorage.setItem
+                                sessionStorage.getItem
+                                sessionStorage.removeItem
+                                if (vm.checked) {
+                                    sessionStorage.setItem('username', vm.loginForm.loginName)
+                                    sessionStorage.setItem('password', vm.loginForm.passWord)
+
+                                    // vm.$cookiesFn.setCookie('username', vm.loginForm.loginName)
+                                    // vm.$cookiesFn.setCookie('password', vm.loginForm.passWord)
+                                } else {
+                                    sessionStorage.removeItem('username')
+                                    sessionStorage.removeItem('password')
+
+                                    // vm.$cookiesFn.delCookie('username')
+                                    // vm.$cookiesFn.delCookie('password')
+                                }
+                                // cookies 添加用户名
+
+
                                 localStorage.setItem('username', this.loginForm.loginName);
                                 vm.$store.commit('setUserName', localStorage.username);
                                 vm.loginStatus = true;

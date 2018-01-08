@@ -7,13 +7,13 @@
                 <el-form-item prop="type_code" label='字典组编号' label-width="90px">
                     <el-input v-model="formInline.type_code" placeholder="字典组编号"></el-input>
                 </el-form-item>
-                <el-form-item prop="key" label="key" >
+                <el-form-item prop="key" label="key">
                     <el-input v-model="formInline.key" placeholder="key"></el-input>
                 </el-form-item>
-                <el-form-item prop="value" label="value" >
+                <el-form-item prop="value" label="value">
                     <el-input v-model="formInline.value" placeholder="value"></el-input>
                 </el-form-item>
-                <el-form-item label="渠道" prop="channel" >
+                <el-form-item label="渠道" prop="channel">
                     <el-select v-model="formInline.channel" placeholder="请选择">
                         <el-option v-for='item in channelArry' :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
@@ -44,44 +44,46 @@
         <el-col :span="24">
             <el-button-group class="navBtn">
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
-                <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新建</el-button>
+                <el-button type="primary" @click="handleReset" class="btnStyle">
+                    <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" v-if='add' @click="handleAdd">
+                    <i class="el-icon-plus el-icon--left"></i>新建</el-button>
             </el-button-group>
         </el-col>
         <!--表格-->
         <el-col :span="24">
             <el-table :data="tableData" border>
-                <el-table-column type="index" label="序号" >
+                <el-table-column type="index" label="序号" width='90px'>
                 </el-table-column>
-                <el-table-column prop="typeCode" label="字典组编号" width='120px'>
+                <el-table-column prop="typeCode" label="字典组编号" width='170px'>
                 </el-table-column>
                 <el-table-column prop="remark" label="描述" width='150px'>
                 </el-table-column>
-                <el-table-column prop="key" label="key"  width='170px'>
+                <el-table-column prop="key" label="key" width='120px'>
                 </el-table-column>
-                <el-table-column prop="value" label="Value" >
+                <el-table-column prop="value" label="Value">
                 </el-table-column>
-                <el-table-column prop="pvs" label="渠道" >
+                <el-table-column prop="pvs" label="渠道">
                 </el-table-column>
-                <el-table-column prop="plats" label="平台" >
+                <el-table-column prop="plats" label="平台">
                 </el-table-column>
-                <el-table-column prop="vers" label="版本" >
+                <el-table-column prop="vers" label="版本">
                 </el-table-column>
 
-                <el-table-column prop="createDatetime" label="创建时间"  width='140px'>
+                <el-table-column prop="createDatetime" label="创建时间" width='180px'>
                 </el-table-column>
-                <el-table-column prop="operatorby" label="操作人" >
+                <el-table-column prop="operatorby" label="操作人" width='120px'>
                 </el-table-column>
                 <!--
                 <el-table-column prop="updateDatetime" label="修改时间" width="200">
                 </el-table-column>
                 -->
-                <el-table-column prop="enabled" :formatter="test" label="是否可用" width="80">
+                <el-table-column prop="enabled" :formatter="test" label="是否可用" width="100">
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="100px">
                     <span>
-                          <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
-                         <!-- <el-button type="primary" size="small" @click="handleEdit($index, row)">编辑</el-button>
+                        <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <!-- <el-button type="primary" size="small" @click="handleEdit($index, row)">编辑</el-button>
                          -->
                     </span>
                 </el-table-column>
@@ -168,7 +170,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -189,7 +190,7 @@
                     channel: '',
                     enable: '',
                     version: '',
-                    size:10,
+                    size: 10,
                     platform: ''
                 },
                 addForm: {
@@ -266,55 +267,24 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/sjzdgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/sjzdgl"].add;
-                    let sjzdglPage = this.$store.state.login.permissions["/ywgl/sjzdgl"];
-                    for (let i = 0; i < sjzdglPage.length; i++) {
-                        if (sjzdglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/sjzdgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/sjzdgl"].add;
-                    let sjzdglPage = this.$store.state.login.permissions["/ywgl/sjzdgl"];
-                    for (let i = 0; i < sjzdglPage.length; i++) {
-                        if (sjzdglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/sjzdgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/sjzdgl"].add;
-                    let sjzdglPage = this.$store.state.login.permissions["/ywgl/sjzdgl"];
-                    for (let i = 0; i < sjzdglPage.length; i++) {
-                        if (sjzdglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/sjzdgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/sjzdgl"].add;
-                    let sjzdglPage = this.$store.state.login.permissions["/ywgl/sjzdgl"];
-                    for (let i = 0; i < sjzdglPage.length; i++) {
-                        if (sjzdglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
+
         },
         methods: {
             getChannelFn() {
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabPv/getForSelect", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPv/getForSelect", qs.stringify(
 
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -352,7 +322,7 @@
             },
             selectFn() {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabCv/getListForSelect", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabCv/getListForSelect", qs.stringify(
 
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -369,9 +339,10 @@
             },
             selectFn1() {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/getListForSelect", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/getListForSelect",
+                    qs.stringify(
 
-                )).then(function (res) {
+                    )).then(function (res) {
                     var code = res.data.retCode;
                     setTimeout(() => {
                         if (code == "000000") {
@@ -386,7 +357,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -409,7 +380,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/update", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/update", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -433,28 +404,29 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getList/", API).then(function (
-                    res) {
-                    var code = res.data.retCode;
-                    var msg = res.data.retMsg;
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/getList/", API).then(
+                    function (
+                        res) {
+                        var code = res.data.retCode;
+                        var msg = res.data.retMsg;
 
-                    setTimeout(() => {
-                        if (code == "000000") {
-                            vm.$store.dispatch('LOAD', false);
-                            vm.totalPages = res.data.retData.totalPages;
-                            vm.size = res.data.retData.size;
-                            vm.number = parseInt(res.data.retData.number + 1)
-                            vm.totalElements = res.data.retData.totalElements;
+                        setTimeout(() => {
+                            if (code == "000000") {
+                                vm.$store.dispatch('LOAD', false);
+                                vm.totalPages = res.data.retData.totalPages;
+                                vm.size = res.data.retData.size;
+                                vm.number = parseInt(res.data.retData.number + 1)
+                                vm.totalElements = res.data.retData.totalElements;
 
-                            var data = res.data.retData.content;
-                            vm.tableData = data;
-                            callback;
-                        } else {
-                            vm.errMsg('查询失败'+msg);
-                            vm.$store.dispatch('LOAD', false);
-                        }
-                    }, 1000);
-                }).catch(function (error) {
+                                var data = res.data.retData.content;
+                                vm.tableData = data;
+                                callback;
+                            } else {
+                                vm.errMsg('查询失败' + msg);
+                                vm.$store.dispatch('LOAD', false);
+                            }
+                        }, 1000);
+                    }).catch(function (error) {
                     console.log(error)
                 })
             },
@@ -494,7 +466,7 @@
             handleSizeChange(val) {
                 // console.log(`每页 ${val} 条`);
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
             handleCurrentChange(val) {
@@ -508,7 +480,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/delete/",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/delete/",
                         qs.stringify({
                             type_code: row.typeCode,
                             channel: row.channel,

@@ -40,7 +40,7 @@
                 </el-table-column>
                 <!--<el-table-column prop="ruleid" label="规则ID" width="270">
                 </el-table-column>-->
-                <el-table-column prop="objname" label="对象编号" width="120">
+                <el-table-column prop="objname" label="对象编号" width="150">
                 </el-table-column>
                 <el-table-column prop="ruleid" label="定向业务编号" width="150">
                     <template scope="scope">
@@ -235,7 +235,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -333,49 +332,18 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/dxywgzgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywgzgl"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/dxywgzgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywgzgl"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/dxywgzgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywgzgl"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/dxywgzgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywgzgl"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
+        
         },
         methods: {
             switchState(index, row) {
@@ -387,7 +355,7 @@
                 } else {
                     enable = 1
                 }
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/updateIfUse", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/updateIfUse", qs.stringify({
                     ruleid: row.ruleid,
                     enable: enable
                 })).then(function (res) {
@@ -435,7 +403,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -485,7 +453,7 @@
                     vm.errMsg('请添加业务')
                     vm.addForm.directbusno = [];
                 } else {
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/findRuleIfExsit",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/findRuleIfExsit",
                         qs.stringify(
                             vm.addForm
                         )).then(function (res) {
@@ -526,7 +494,7 @@
                 }
                 // console.log(idxs);
                 // return;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
                     ruleid: vm.editForm.ruleid,
                     directbusno: vm.addForm.directbusno,
                     idxs: idxs,
@@ -552,7 +520,7 @@
             },
             pullDownData() {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/menu/getListWithoutPage").then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/menu/getListWithoutPage").then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -581,7 +549,7 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/getList/", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/getList/", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -669,7 +637,7 @@
                 vm.$store.dispatch('LOAD', true);
 
                 //  2017年05月12日18:06:46  周五做到这里  替换了 接口 这里报错
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getListForPublish", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getListForPublish", qs.stringify({
                     idx: vm.textarry[index].text
                     // idx: index+1
                 })).then(function (res) {
@@ -708,7 +676,7 @@
             showDetails(index, row) {
                 var vm = this;
                 vm.showDetailsDog = true;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/business/tabDirectBusRule/findTheContactDirectBuses", qs.stringify({
                         ruleid: row.ruleid
                     })).then(function (res) {
@@ -733,7 +701,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/delete/",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/delete/",
                         qs.stringify({
                             ruleid: row.ruleid
                         })
@@ -770,7 +738,7 @@
                 this.editForm.enable = row.enable;
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/business/tabDirectBusRule/findTheContactDirectBuses", qs.stringify({
                         ruleid: row.ruleid
                     })).then(function (res) {

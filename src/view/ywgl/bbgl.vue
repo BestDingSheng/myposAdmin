@@ -22,8 +22,10 @@
         <el-col :span="24">
             <el-button-group class="navBtn">
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
-                <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新建</el-button>
+                <el-button type="primary" @click="handleReset" class="btnStyle">
+                    <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" v-if='add' @click="handleAdd">
+                    <i class="el-icon-plus el-icon--left"></i>新建</el-button>
             </el-button-group>
         </el-col>
         <!--表格-->
@@ -48,8 +50,8 @@
 
                 <el-table-column inline-template fixed="right" label="维护" width="150">
                     <span>
-                          <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
-                          <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button>
+                        <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button>
                     </span>
                 </el-table-column>
 
@@ -105,7 +107,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -118,7 +119,7 @@
                 formInline: {
                     vergroupno: '',
                     vers: '',
-                    size:10,
+                    size: 10,
                     enable: '',
                     page: ''
                 },
@@ -161,49 +162,18 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/bbgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/bbgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/ywgl/bbgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/bbgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/bbgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/ywgl/bbgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/bbgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/bbgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/ywgl/bbgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/bbgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/bbgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/ywgl/bbgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
+
         },
         updated() {
             console.log(this.add);
@@ -242,7 +212,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabCv/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabCv/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -265,7 +235,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabCv/update", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabCv/update", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -288,26 +258,27 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabCv/getList/", API).then(function (
-                    res) {
-                    var code = res.data.retCode;
-                    var msg = res.data.retMsg;
-                    setTimeout(() => {
-                        if (code == "000000") {
-                            vm.$store.dispatch('LOAD', false);
-                            vm.totalPages = res.data.retData.totalPages;
-                            vm.size = res.data.retData.size;
-                            vm.number = parseInt(res.data.retData.number + 1)
-                            vm.totalElements = res.data.retData.totalElements;
-                            var data = res.data.retData.content;
-                            vm.tableData = data;
-                            callback;
-                        } else {
-                            vm.$store.dispatch('LOAD', false);
-                            vm.errMsg('查询失败'+msg);
-                        }
-                    }, 1000);
-                }).catch(function (error) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabCv/getList/", API).then(
+                    function (
+                        res) {
+                        var code = res.data.retCode;
+                        var msg = res.data.retMsg;
+                        setTimeout(() => {
+                            if (code == "000000") {
+                                vm.$store.dispatch('LOAD', false);
+                                vm.totalPages = res.data.retData.totalPages;
+                                vm.size = res.data.retData.size;
+                                vm.number = parseInt(res.data.retData.number + 1)
+                                vm.totalElements = res.data.retData.totalElements;
+                                var data = res.data.retData.content;
+                                vm.tableData = data;
+                                callback;
+                            } else {
+                                vm.$store.dispatch('LOAD', false);
+                                vm.errMsg('查询失败' + msg);
+                            }
+                        }, 1000);
+                    }).catch(function (error) {
                     console.log(error)
                 })
             },
@@ -346,9 +317,9 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
-                
+
             },
             handleCurrentChange(val) {
                 this.handleSearch(val, this.sucMsg('加载成功'));
@@ -361,7 +332,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabCv/delete/",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/business/tabCv/delete/",
                         qs.stringify({
                             vergroupno: row.vergroupno
                         })

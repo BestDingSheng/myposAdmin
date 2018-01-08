@@ -18,8 +18,10 @@
         <el-col :span="24">
             <el-button-group class="navBtn">
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
-                <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新建</el-button>
+                <el-button type="primary" @click="handleReset" class="btnStyle">
+                    <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" v-if='add' @click="handleAdd">
+                    <i class="el-icon-plus el-icon--left"></i>新建</el-button>
             </el-button-group>
         </el-col>
         <!--表格-->
@@ -39,9 +41,9 @@
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="200">
                     <span>
-                          <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
-                          <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button>
-                          <el-button type="primary" size="small" @click="handleQuan($index, row)">权限</el-button>
+                        <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button>
+                        <el-button type="primary" size="small" @click="handleQuan($index, row)">权限</el-button>
                     </span>
                 </el-table-column>
 
@@ -229,7 +231,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -249,7 +250,7 @@
                 formInline: {
                     rolename: '',
                     page: '',
-                    size:10,
+                    size: 10,
                     startTime: '',
                     endTime: '',
 
@@ -287,67 +288,37 @@
                 dialogQuan: false
             }
         },
+        computed: {
+            add() {
+                return this.$quanxian('add')
+            },
+            del() {
+                return this.$quanxian('delete')
+            },
+            update() {
+                return this.$quanxian('update')
+            },
+            view() {
+                return this.$quanxian('view')
+            },
+
+
+        },
         mounted() {
             this.handleSearch();
             this.listall();
+        },
+        updated() {
+ 
+        },
 
-        },
-        update() {
-            console.log(this.add);
-        },
-        computed: {
-
-            add() {
-                if (this.$store.state.login.permissions["/htgl/jsgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/jsgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/jsgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
-            },
-            del() {
-                if (this.$store.state.login.permissions["/htgl/jsgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/jsgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/jsgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
-            },
-            update() {
-                if (this.$store.state.login.permissions["/htgl/jsgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/jsgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/jsgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
-            },
-            view() {
-                if (this.$store.state.login.permissions["/htgl/jsgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/jsgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/jsgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
-        },
         methods: {
             rolePermissionSubmit: function () {
                 this.$store.dispatch('LOAD', true);
                 var vm = this;
                 console.log(vm.assignPermissionData.sysFuncId.join(','));
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/saveOrUpdateAuthrole",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/managerBam/authRole/saveOrUpdateAuthrole",
                     qs.stringify({
                         id: vm.assignPermissionData.id,
                         sysFuncId: vm.assignPermissionData.sysFuncId.join(',')
@@ -388,9 +359,10 @@
             },
             rolequery(id) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/menu/getlistSystemFunctionIds", qs.stringify({
-                    roleid: id
-                })).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/menu/getlistSystemFunctionIds",
+                    qs.stringify({
+                        roleid: id
+                    })).then(function (res) {
                     var code = res.data.retCode;
                     setTimeout(() => {
                         if (code == "000000") {
@@ -411,7 +383,7 @@
             },
             listall(id) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listAllMenu", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listAllMenu", qs.stringify(
 
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -433,7 +405,7 @@
                 var id = localStorage.getItem('userid');
                 var vm = this;
 
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listUserMenu", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listUserMenu", qs.stringify({
                     id: id
                 })).then(function (res) {
                     var code = res.data.retCode;
@@ -495,7 +467,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/saveAuthrole", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/saveAuthrole", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -515,7 +487,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/updateAuthrole", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/updateAuthrole", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -562,7 +534,8 @@
                 var API = qs.stringify(
                     data
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/findPageAuthrole", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/authRole/findPageAuthrole",
+                    API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -621,7 +594,7 @@
             },
             handleReset() { //重置
                 this.$refs.formInline.resetFields();
-                this.createdTimeRange=[];
+                this.createdTimeRange = [];
             },
             handleAdd() {
                 this.dialogAdd = true; // 点击新增 弹窗
@@ -635,7 +608,7 @@
             },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
             handleCurrentChange(val) {
@@ -649,7 +622,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server +
+                    this.$http.post("http://" + vm.$store.state.common.server +
                         "/managerBam/authRole/deleteAuthrole",
                         qs.stringify({
                             idArr: row.id

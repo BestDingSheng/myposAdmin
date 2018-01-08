@@ -3,11 +3,6 @@
     <el-row>
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="formInline" ref="formInline" class="demo-form-inline" label-width='70px'>
-                <el-form-item label="版面" prop="contenttype">
-                    <el-select v-model="formInline.contenttype" placeholder="请选择">
-                        <el-option v-for="item in banmian" :key='item.id' :label="item.text" :value="item.id"></el-option>
-                    </el-select>
-                </el-form-item>
 
                 <el-form-item prop="title" label="广告名称">
                     <el-input v-model="formInline.title" placeholder="标题"></el-input>
@@ -15,18 +10,23 @@
 
 
                 <el-form-item label="渠道" prop="pvgroupno">
-                    <el-select v-model="formInline.pvgroupno" placeholder="请选择">
+                    <el-select v-model="formInline.pvgroupno" placeholder="请选择" @change="apiFnn">
                         <el-option v-for="item in pvgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="版本" prop="vergroupno">
-                    <el-select v-model="formInline.vergroupno" placeholder="请选择">
+                    <el-select v-model="formInline.vergroupno" placeholder="请选择" @change="apiFnn">
                         <el-option v-for="item in vergroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="平台" prop="platgroupno">
-                    <el-select v-model="formInline.platgroupno" placeholder="请选择">
+                    <el-select v-model="formInline.platgroupno" placeholder="请选择" @change="apiFnn">
                         <el-option v-for="item in platgroupno" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="版面" prop="contenttype">
+                    <el-select v-model="formInline.contenttype" placeholder="请选择">
+                        <el-option v-for="item in banmian" :key='item.id' :label="item.text" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
 
@@ -55,8 +55,10 @@
         <el-col :span="24">
             <el-button-group class="navBtn">
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
-                <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>发布</el-button>
+                <el-button type="primary" @click="handleReset" class="btnStyle">
+                    <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" v-if='add' @click="handleAdd">
+                    <i class="el-icon-plus el-icon--left"></i>发布</el-button>
             </el-button-group>
         </el-col>
         <!--表格-->
@@ -65,11 +67,12 @@
                 <el-table-column type="index" label="序号" width='70'>
                 </el-table-column>
 
-                <el-table-column prop="directbusno.contenttypeName" label="版面" width='100'></el-table-column>
-                <el-table-column prop="directbusno.title" label="广告名称" width='120'></el-table-column>
+                <el-table-column prop="directbusno.contenttypeName" label="版面" width='160'></el-table-column>
+                <el-table-column prop="idxText" label="广告帧" width='100'></el-table-column>
+                <el-table-column prop="directbusno.title" label="广告名称" width='150'></el-table-column>
                 <el-table-column prop="pvgroupno.pvs" label="渠道"></el-table-column>
                 <el-table-column prop="vergroupno.vers" label="版本"></el-table-column>
-                <el-table-column prop="platgroupno.plats" label="平台"> </el-table-column>
+                <el-table-column prop="platgroupno.plats" label="平台" width='120'> </el-table-column>
                 <el-table-column prop="publishStatusName" label="状态">
 
                     <template scope="scope">
@@ -82,21 +85,16 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column prop="updatetime" label="状态时间" width="180" sortable>
+                <el-table-column prop="updatetime" label="状态时间" width="200" sortable>
                 </el-table-column>
 
-                <el-table-column inline-template prop='enable' fixed="right" label="维护" width="160px">
+                <el-table-column inline-template prop='enable' fixed="right" label="维护" width="180px">
                     <span>
-
-                       <el-button  type="text" v-if='row.auditStatusName=="驳回" && check' size="small" @click="handleDelete($index, row)">删除</el-button>
-  
-
-                         <el-button  type="text" v-if='row.auditStatusName=="审核中" && check' size="small" @click="audit($index, row)">审核</el-button>
-
-                          <el-button type="text" v-if='row.auditStatusName=="审核通过" && disable' size="small" @click="switchState($index, row)">禁用</el-button>
-
-                          <el-button type="text" size="small" @click="showDetails($index,row)">查看详情</el-button>
-                         
+                        <el-button type="text" v-if='row.auditStatusName=="驳回" && check' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <el-button type="text" v-if='row.auditStatusName=="审核中" && check' size="small" @click="audit($index, row)">审核</el-button>
+                        <el-button type="text" v-if='row.auditStatusName=="审核通过" && row.publishStatusName!="下架" && disable' size="small" @click="switchState($index, row)">禁用</el-button>
+                        <el-button type="text" size="small" @click="showDetails($index,row)">查看详情</el-button>
+                        <el-button type="text" size="small" v-if='zhiding(row)' @click="zhidingFn(row)">置顶</el-button>
                     </span>
                 </el-table-column>
 
@@ -142,10 +140,23 @@
                 <el-row>
                     <el-col :span='12'>
                         <el-form-item label="版面选择" prop="contenttype">
-                            <el-select v-model="addForm.contenttype" placeholder="请选择">
+                            <el-select v-model="addForm.contenttype" placeholder="请选择" @change="selectG">
                                 <el-option v-for="item in addbanmian" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row v-if="showguang">
+                    <el-col :span='12'>
+                        <el-form-item label="广告帧" prop="idx">
+                            <el-select v-model="addForm.idx" placeholder="请选择" @change="validationKey">
+                                <el-option v-for="item in guanggao" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span='12' v-if='statusG'>
+                        <p class="textG">此广告帧已经存在一条广告,如果继续提交,将更新此帧广告</p>
+
                     </el-col>
                 </el-row>
                 <el-row>
@@ -163,27 +174,68 @@
                 <el-form-item label="内容图片" class="adCon" prop="content_image">
                     <el-input v-model="addForm.content_image" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
                     <el-upload :with-credentials='true' class="upload-demo" ref='titleUpload' drag accept="image/png,image/jpeg" :action="'http://'+this.$store.state.common.server+'/business/fileUpload/uploadfileToServer'"
-                        type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove" :on-success="uploadSuc">
+                        type="drag" mutiple :before-upload='beforeUpload' :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove"
+                        :on-success="uploadSuc">
                         <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将文件拖到此处，或
+                            <em>点击上传</em>
+                        </div>
                     </el-upload>
                 </el-form-item>
 
                 <!-- option -->
 
-                <el-row :gutter="24">
-
+                <!-- 选填空 -- >
+                <!--
+                <el-row :gutter="24" v-if='layout'>
                     <el-col :span="10">
-                        <el-form-item label="跳转网页" label-width="100px" prop='content_url'>
+                        <el-form-item label="跳转网页" label-width="100px" prop=''>
                             <el-input type="text" placeholder="跳转网页" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url"></el-input>
                         </el-form-item>
                     </el-col>
                     <el-col :span="10">
-                        <el-form-item label="跳转页面标题" label-width="120px" prop='content_url_title'>
+                        <el-form-item label="跳转页面标题" label-width="120px" prop=''>
                             <el-input type="text" placeholder="跳转页面标题" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url_title"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
+                -->
+                <!-- v-if='layoutStatus' 15号修改 -->
+
+                <el-row :gutter="24">
+                    <el-col :span="10">
+                        <el-form-item label="跳转业务" label-width="100px" prop='content_business'>
+                            <el-select v-model="addForm.content_business" placeholder="请选择" @change='isstatus'>
+                                <el-option v-for="item in contentbusiness" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+                <el-row :gutter="24">
+                    <el-col :span="10">
+                        <!-- :required='layout' -->
+                        <el-form-item label="跳转网页" label-width="100px" prop='content_url'>
+                            <el-input type="text" @change="emptyContent" placeholder="跳转网页" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <!-- :required='layout' :rules="[{required: layout, message: '请输入网页标题', trigger: 'blur'}]" -->
+                        <el-form-item label="跳转页面标题" label-width="100px" prop='content_url_title'>
+                            <el-input type="text" @change="emptyContent" placeholder="跳转页面标题" :disabled='addForm.open_type=="open_business"' v-model="addForm.content_url_title"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row v-if='countdown'>
+                    <el-col :span="10">
+                        <el-form-item label="倒计时（秒）" label-width="120px" prop='countDown'>
+                            <el-input type="text" placeholder="倒计时" v-model="addForm.countDown"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+
+
                 <el-form-item label="广告发布日期" label-width="120px" prop='publishST'>
                     <!--<el-input v-model="formInline.vers" placeholder="创建时间"></el-input>-->
                     <el-date-picker v-model="addForm.publishST" type="datetime" placeholder="选择日期时间" style='width:250px;'>
@@ -246,7 +298,19 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-row v-if="isaudit && auditGuanggao">
+                    <el-col :span='12'>
+                        <el-form-item label="广告帧" prop="idx">
+                            <el-select v-model="addForm.idx" :disabled='true' placeholder="请选择" @change="validationKey">
+                                <el-option v-for="item in guanggao" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span='12' v-if='statusG'>
+                        <p class="textG">此广告帧已经存在一条广告,如果继续提交,将更新此帧广告</p>
 
+                    </el-col>
+                </el-row>
 
                 <!-- -->
                 <el-row>
@@ -262,9 +326,20 @@
                     <img :src="detailedFrom.content_image" alt="" class='showimg'>
                 </el-form-item>
                 <!-- option -->
-                <el-row :gutter="24">
 
-                    <el-col :span="6">
+                <el-row :gutter="24">
+                    <el-col :span="8">
+                        <el-form-item label="跳转业务" label-width="100px" prop='content_business'>
+                            <el-select v-model="detailedFrom.content_business" :disabled='true' placeholder="请选择" @change='selectFn'>
+                                <el-option v-for="item in contentbusiness" :key='item.id' :label="item.text" :value="item.id"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+                <el-row :gutter="24" v-if='isshow'>
+
+                    <el-col :span="10">
                         <el-form-item label="跳转网页" label-width="100px" prop='content_url'>
 
                             <el-input type="text" placeholder="跳转网页" :disabled='true' v-if='!detailedFrom.content_url' v-model="detailedFrom.content_url"></el-input>
@@ -275,6 +350,13 @@
                     <el-col :span="10">
                         <el-form-item label="跳转页面标题" label-width="120px" prop='content_url_title'>
                             <el-input type="text" placeholder="跳转页面标题" :disabled='true' v-model="detailedFrom.content_url_title"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="24" v-if='detailedFrom.contenttype=="SPLASH" || detailedFrom.contenttype=="FLOAT" '>
+                    <el-col :span="10">
+                        <el-form-item label="倒计时(秒)" label-width="110px" prop='countDown' :required='layout'>
+                            <el-input type="text" placeholder="倒计时" :disabled='true' v-model="detailedFrom.countDown"></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -371,10 +453,23 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
+
+            var countDown = (rule, value, callback) => {
+                if (value) {
+                    var reg = /^\d+$/
+                    if (reg.test(value)) {
+                        callback()
+                    } else {
+                        callback(new Error('必须是数字'))
+                    }
+                } else {
+                    callback(new Error('请填写倒计时'))
+                }
+            }
+
             var publishST = (rule, value, callback) => {
                 if (!value) {
                     return callback(new Error('请选择开始时间'));
@@ -391,23 +486,72 @@
                 }
 
             };
+            var content_business = (rule, value, callback) => { // 跳转业务
+
+                if (value == '') {
+                    if (this.addForm.content_url == '' && this.addForm.content_url_title == '') {
+                        callback()
+                    } else {
+                        callback();
+                    }
+                } else {
+                    callback();
+                }
+
+            }
+            var content_url_title = (rule, value, callback) => { // 跳转标题
+                // if (this.layout) {
+                if (value == '') {
+                    if (this.addForm.content_url) {
+                        // callback(new Error('请填写标题'))
+
+                        callback(new Error('请填写标题'))
+                    } else {
+                        callback()
+                        // callback()
+
+                    }
+                } else {
+
+                    callback();
+                }
+                // } else {
+                //     callback();
+                // }
+
+            }
+
 
             var content_url = (rule, value, callback) => { // 跳转url
-                if (value == '') {
-                    callback(new Error('请输入跳转url'));
-                } else {
+
+                if (value) {
                     let str = 'http|https://www.xxxxx.xxx'
                     let reg =
-                        /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+                        /^https?:\/\/\w+\..+$/
+                    // /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
                     if (reg.test(value)) {
                         callback()
                     } else {
-                        callback(new Error(str))
 
+                         callback(new Error(str))
+                 
                     }
+                } else {
+                    if (this.addForm.content_url_title) {
+                            callback(new Error('请填写url'))
+                        } else {
+                            callback()
+                        }
+
                 }
+
             }
             return {
+                layoutStatus: true,
+                layout: false,
+                showguang: false,
+                countdown: false, // 倒计时字段
+                auditGuanggao: false,
                 gridData: [],
                 dtailgridData: [],
                 testdata: [{
@@ -423,10 +567,13 @@
                 curIndex: 0,
                 enableValue: '',
                 createdTimeRange: [],
+                guanggao: [],
                 releaseDate: '',
                 isaudit: false,
+                isshow: true,
                 objdetail: '',
                 detailruleid: '',
+                statusG: false,
                 textarry: [{
                         text: '位置',
                         id: "标题",
@@ -473,6 +620,7 @@
                 pvgroupno: [],
                 addbanmian: [],
                 banmian: [],
+                contentbusiness: [],
 
                 title_click_url: [],
                 addForm: {
@@ -488,7 +636,9 @@
                     content_url_title: '',
                     publishST: null,
                     publishET: null,
-                    content_image: ''
+                    countDown: '', //倒计时
+                    content_image: '',
+                    content_business: '',
                 },
                 detailedFrom: {
                     objectno: "1",
@@ -501,31 +651,37 @@
                     content_url: '',
                     content_url_title: '',
                     open_type: '',
+                    countDown: '', //倒计时
                     content_business: '',
                     content_image: '',
                     contenttype: '',
+                    content_business: ''
                 },
                 addRules: {
+                    countDown: [{
+                            required: true,
+                            validator: countDown,
+                            trigger: 'blur'
+                        }
+
+                    ],
                     content_image: [{
                         required: true,
                         message: "请选择图片",
                         trigger: "change"
                     }],
                     content_url_title: [{
-                        required: true,
-                        message: "请输入跳转页面标题",
-                        trigger: "blur"
+                        validator: content_url_title,
+                        trigger: 'blur'
                     }],
                     content_url: [{
-                            required: true,
-                            message: "请输入跳转页面url",
-                            trigger: "blur"
-                        },
-                        {
-                            validator: content_url,
-                            trigger: 'blur'
-                        },
-                    ],
+                        validator: content_url,
+                        trigger: 'blur'
+                    }, ],
+                    content_business: [{
+                        validator: content_business,
+                        trigger: 'change'
+                    }],
                     publishST: [{
                             type: 'date',
                             required: true,
@@ -565,7 +721,7 @@
                     }],
                     idx: [{
                         required: true,
-                        message: '请选择栏位',
+                        message: '请选择广告帧',
                         trigger: 'change'
                     }],
                     objectno: [{
@@ -595,83 +751,91 @@
             this.handleSearch();
             this.pullDownData();
 
-            this.apiFn({
-                channel: 'mpos',
-                version: 1,
-                platform: 1,
-                type_code: 'SHEET'
-            }, 'banmian')
+            // this.apiFn({
+            //     channel: 'mpos',
+            //     version: 66,
+            //     platform: 1,
+            //     type_code: 'SHEET'
+            // }, 'banmian')
 
+            // this.contentbusinessFn('directLiJiTiYan', 'MPOS', 'contentbusiness');directLogoImage
+            this.contentbusinessFn('directLogoImage', 'MPOS', 'contentbusiness');
+        },
+        watch: {
+            contenttype(val) {
 
+                // if (val == 'LICAI' || val == 'INDEX') {
+                //     this.layoutStatus = true;
+                //     (val == 'INDEX') ? this.layout = true: this.layout = false;
+                //     console.log(this.layout);
+                // } else {
+                //     this.layoutStatus = false
+                // }
+                //  判断 是否有倒计时
+                if (val == 'SPLASH' || val == 'FLOAT') {
+                    if (val == 'SPLASH') {
+                        this.countdown = true;
+                    } else {
+                        this.countdown = false;
+                    }
+
+                    this.layout = (val == 'SPLASH' ? false : true);
+                    // console.log(this.layout);
+                } else {
+                    this.countdown = false;
+
+                    if (val == '') {
+                        this.layout = false;
+                    } else {
+                        this.layout = true;
+                    }
+
+                    // console.log(this.layout);
+                }
+                // LICAI // 理财
+                // INDEX // 首页
+                // DAIKUAI 贷款
+                // SPLASH 启动页
+            },
+            banben(val) { // 监听版本变化
+                this.vergroupno.forEach((item, index, arr) => {
+                    if (item.id == val && val != '1') {
+                        let str = item.text.substring(1, item.text.length);
+                        let ver = parseFloat(str) * 100;
+                        if (ver >= 530) {
+                            this.showguang = true;
+                        } else {
+                            this.showguang = false;
+                        }
+                    }
+                });
+            }
         },
         computed: {
-
+            banben() {
+                return this.addForm.vergroupno
+            },
+            contenttype() {
+                return this.addForm.contenttype
+            },
             add() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('view')
             },
-            disable() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'disable') {
 
-                            return true;
-                        } else {}
-                    }
-                }
+            disable() {
+                return this.$quanxian('disable')
             },
             check() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'check') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('check')
             },
             aUrl() {
                 let str = this.detailedFrom.content_url;
@@ -687,12 +851,101 @@
 
         },
         methods: {
-
-
+            zhiding(row) {
+                let d1 = row.auditStatusName;
+                let d2 = row.publishStatusName;
+                let d3 = row.vergroupno.vers;
+                let d4 = row.idx;
+                let d5 = row.directbusno.contenttypeName;
+                let str = d3.substring(1, d3.length);
+                let ver = parseFloat(str) * 100;
+                // console.log(d1,d2,ver)
+                if (d1 == '审核通过' && d2 == '上架' && d4 != '0' && d5 != '定向广告' && ver >= 530) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            zhidingFn(row) {
+                let vm = this;
+                vm.$store.dispatch('LOAD', true);
+                let objectno = row.objectno.id;
+                let platgroupno = row.platgroupno.platgroupno;
+                let vergroupno = row.vergroupno.vergroupno;
+                let pvgroupno = row.pvgroupno.pvgroupno;
+                let directbusno = row.directbusno.directbusno;
+                let ruleid = row.ruleid;
+                let contenttype = row.directbusno.contenttype;
+                let obj = {
+                    objectno,
+                    platgroupno,
+                    vergroupno,
+                    pvgroupno,
+                    directbusno,
+                    ruleid,
+                    contenttype
+                };
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/advertisement/toTop",
+                    qs.stringify(obj)).then(function (res) {
+                    var code = res.data.retCode;
+                    var data = res.data.retData;
+                    setTimeout(() => {
+                        if (code == "000000") {
+                            vm.handleSearch(vm.sucMsg('操作成功'));
+                        } else {
+                            vm.errMsg('操作失败');
+                            vm.$store.dispatch('LOAD', false);
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            },
             // datefn(value){
             //     alert(new Date(value.replace(/\-/g, "\/")));
 
             // },
+
+            isstatus() { // 判断跳转业务
+                console.log(this.layout);
+                this.addForm.content_url = '';
+                this.addForm.content_url_title = '';
+
+                if (this.layout) {
+                    this.$refs['addForm'].validateField('content_url', function (errorMessage) {
+
+                    });
+                    this.$refs['addForm'].validateField('content_url_title', function (errorMessage) {
+
+                    })
+                }
+
+
+            },
+
+            emptyContent() {
+                if (this.addForm.content_business) {
+                    this.addForm.content_business = '';
+
+                }
+                this.$refs['addForm'].validateField('content_business', function (errorMessage) {
+
+                })
+            },
+
+
+            beforeUpload(file) {
+                let filename = file.name;
+                let fileReg = /\.(?:png|jpg|jpeg)$/i;
+                if (fileReg.test(filename)) {
+
+                } else {
+                    this.errMsg('请选择图片')
+                    return false;
+                }
+
+            },
 
             onChange(file, fileList) {
                 if (fileList.length > 1) {
@@ -707,6 +960,88 @@
             },
             selectType() {
                 this.selectFn('SHEET');
+
+            },
+            validationKey() {
+                let vm = this;
+                let pvgroupno = this.addForm.pvgroupno;
+                let vergroupno = this.addForm.vergroupno;
+                let platgroupno = this.addForm.platgroupno;
+                let contenttype = this.addForm.contenttype;
+                let idx = this.addForm.idx;
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/advertisement/ifAdvertiseExsit",
+                    qs.stringify({
+                        pvgroupno: pvgroupno,
+                        vergroupno: vergroupno,
+                        platgroupno: platgroupno,
+                        contenttype: contenttype,
+                        idx: idx
+
+                    })).then(function (res) {
+                    var code = res.data.retCode;
+                    var data = res.data.retData;
+                    setTimeout(() => {
+                        if (code == "000000") {
+                            if (data) {
+                                vm.statusG = true;
+                                // vm.errMsg('此广告帧已经存在一条广告,如果继续提交,将更新此帧广告')
+                            } else {
+                                vm.statusG = false;
+                            }
+
+                        } else {
+
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            },
+            selectG() {
+                if (!this.showguang) {
+                    return;
+                }
+                let vm = this;
+                // FLYING //定向广告
+                // SPLASH 启动页
+                // ADVERTISELAYOUTFLY  定向业务
+                let pvgroupno = this.addForm.pvgroupno;
+                let vergroupno = this.addForm.vergroupno;
+                let platgroupno = this.addForm.platgroupno;
+                let contenttype = this.addForm.contenttype;
+                let type_code;
+                if (contenttype == 'FLYING') {
+                    type_code = 'ADVERTISELAYOUTFLY'
+                } else if (contenttype == 'SPLASH' || contenttype == 'TRADERESULTPAGE') {
+                    type_code = 'ADVERTISELAYOUTSPLASH'
+                } else {
+                    type_code = 'ADVERTISELAYOUT'
+                }
+
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDic/getListForCvAndPvAndPlatform",
+                    qs.stringify({
+                        channel: pvgroupno,
+                        version: vergroupno,
+                        platform: platgroupno,
+                        type_code: type_code
+
+                    })).then(function (res) {
+                    var code = res.data.retCode;
+                    var data = res.data.retData;
+                    setTimeout(() => {
+                        if (code == "000000") {
+                            vm.guanggao = data;
+
+                        } else {
+
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
+
 
             },
             selectFn(type_code) {
@@ -727,7 +1062,8 @@
                 }
                 var vm = this;
                 // 传 layout 就是栏位 其他就是版面 
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDic/getListForCvAndPvAndPlatform",
                     qs.stringify({
                         channel: pvgroupno,
                         version: vergroupno,
@@ -739,13 +1075,49 @@
                     var data = res.data.retData;
                     setTimeout(() => {
                         if (code == "000000") {
-                            if (type_code == 'LAYOUT') {
-                                vm.weizhi = data;
-                            } else {
-                                vm.addbanmian = data;
-                            }
 
+                            vm.addbanmian = data;
 
+                        } else {
+
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
+
+            },
+
+            apiFnn() {
+
+                let pvgroupno = this.formInline.pvgroupno;
+                let vergroupno = this.formInline.vergroupno;
+                let platgroupno = this.formInline.platgroupno;
+                if (!pvgroupno) {
+                    return;
+                }
+                if (!vergroupno) {
+                    return;
+                }
+                if (!platgroupno) {
+                    return;
+                }
+                var vm = this;
+                // 传 layout 就是栏位 其他就是版面 
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDic/getListForCvAndPvAndPlatform",
+                    qs.stringify({
+                        channel: pvgroupno,
+                        version: vergroupno,
+                        platform: platgroupno,
+                        type_code: 'SHEET'
+
+                    })).then(function (res) {
+                    var code = res.data.retCode;
+                    var data = res.data.retData;
+                    setTimeout(() => {
+                        if (code == "000000") {
+                            vm.banmian = data;
                         } else {
 
                         }
@@ -758,7 +1130,7 @@
             auditStatus(type) {
                 this.$store.dispatch('LOAD', true);
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/checkCommit", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/advertisement/checkCommit", qs.stringify({
                     ruleid: vm.detailruleid,
                     auditStatus: type
                 })).then(function (res) {
@@ -799,7 +1171,7 @@
                     // return;
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server +
+                    this.$http.post("http://" + vm.$store.state.common.server +
                         "/business/advertisement/updateIfUse", qs.stringify({
                             ruleid: row.ruleid,
                             auditStatus: 'DISABLED'
@@ -859,15 +1231,17 @@
             },
             addFn() { //新增 方法
 
-                console.log(this.addForm.publishET);
+                // console.log(this.addForm.publishET);
                 // return;
-
+                if (!this.showguang) {
+                    this.addForm.idx = '0'
+                }
 
                 this.$store.dispatch('LOAD', true);
                 // console.log(this.addForm);
                 // return;
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/advertisement/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -876,9 +1250,14 @@
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.dialogAdd = false;
+                            vm.layout = false;
+                            console.log(vm.layout);
                             vm.$store.dispatch('LOAD', false);
                             vm.$refs.addForm.resetFields();
+
                             vm.$refs.titleUpload.clearFiles();
+
+                            vm.statusG = false;
 
                             // for (var item in vm.addForm) {
                             // }
@@ -918,7 +1297,8 @@
                     // vm.addForm.directbusno = [];
                     vm.addForm.directbusno = ''; // 现在传字符串 只能传一个
                 } else {
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/findRuleIfExsit",
+                    this.$http.post("http://" + vm.$store.state.common.server +
+                        "/business/tabDirectBusRule/findRuleIfExsit",
                         qs.stringify(
                             vm.addForm
                         )).then(function (res) {
@@ -954,7 +1334,7 @@
                     vm.errMsg('请添加业务')
                     return;
                 }
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
                     ruleid: vm.editForm.ruleid,
                     directbusno: vm.addForm.directbusno,
                     enable: '1'
@@ -981,7 +1361,7 @@
 
                 var vm = this;
 
-                axios.post("http://" + vm.$store.state.common.server + "/business/menu/getListWithoutPage").then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/menu/getListWithoutPage").then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -1004,9 +1384,6 @@
             },
             handleSearch(num, callback) {
                 var vm = this;
-
-
-
                 var data = {};
                 if ((!this.formInline.rolename && !this.createdTimeRange.length) || (this.formInline.rolename && !this.createdTimeRange
                         .length)) {
@@ -1045,7 +1422,7 @@
                 var API = qs.stringify(
                     data
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/getList", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/advertisement/getList", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -1115,7 +1492,7 @@
                         }
                         // this.dialogAdd = false;
                     } else {
-                        console.log(valid);
+
                         return false;
                     }
                 });
@@ -1146,52 +1523,6 @@
             deleteRow(index) {
                 this.textarry.splice(index, 1);
             },
-            getCurIndex(index) { //选择二级弹窗方法
-                var vm = this;
-                let idx = vm.addForm.idx;
-                if (!idx) {
-                    vm.$message('请选着栏位')
-                    return
-                }
-                // if (index > 1) {
-                //     for (var i = 0; i < vm.textarry.length; i++) {
-                //         console.log(vm.textarry[index].text + ':' + vm.textarry[i].text);
-                //         if (index == i) {
-                //             continue;
-                //         }
-                //         if (vm.textarry[index].text == vm.textarry[i].text) {
-                //             vm.errMsg('栏位不能重复');
-                //             return;
-                //         }
-                //     }
-
-                // }
-
-                vm.$store.dispatch('LOAD', true);
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getListForPublish", qs.stringify({
-                    idx: vm.addForm.idx
-                    // idx: index+1
-                })).then(function (res) {
-                    var code = res.data.retCode;
-
-                    setTimeout(() => {
-                        if (code == "000000") {
-                            // vm.handleSearch(vm.sucMsg('添加成功'));
-                            vm.gridData = res.data.retData.content;
-                            vm.dialogTableVisible = true;
-                            vm.$store.dispatch('LOAD', false);
-                        } else {
-                            vm.errMsg('新增失败');
-                        }
-                    }, 1000);
-                }).catch(function (error) {
-                    console.log(error)
-                })
-
-                // 
-                // this.dialogTableVisible = true;
-                this.curIndex = index;
-            },
             handleCurrent(currentRow) {
                 if (currentRow) {
                     // this.textarry[this.curIndex].id = currentRow.title;
@@ -1211,6 +1542,16 @@
             audit(index, row) {
                 this.isaudit = true;
                 this.detailruleid = row.ruleid;
+                //  处理版本
+                let d3 = row.vergroupno.vers;
+                let str = d3.substring(1, d3.length);
+                let ver = parseFloat(str) * 100;
+                if (ver >= 530) {
+                    this.auditGuanggao = true;
+                } else {
+                    this.auditGuanggao = false;
+                }
+
                 this.showDetails(index, row);
 
             },
@@ -1218,13 +1559,9 @@
             showDetails(index, row) {
 
                 var vm = this;
-
-                // vm.showDetailsDog = true;
-                // return
-
                 vm.$store.dispatch('LOAD', true);
                 vm.objdetail = row.objectno;
-                axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/findByRule",
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/advertisement/findByRule",
                     qs.stringify({
                         ruleid: row.ruleid
                     })
@@ -1240,7 +1577,9 @@
                                 }
                                 // 
 
-                                vm.detailedFrom.contenttype = row.directbusno.contenttypeName;
+                                // (res.data.retData.contenttype=='SPLASH' || res.data.retData.contenttype=='DAIKUAI')?vm.isshow=false:vm.isshow=true;
+
+                                // vm.detailedFrom.contenttype = row.directbusno.contenttypeName;
                                 vm.detailedFrom.pvgroupno = row.pvgroupno.pvgroupno
                                 vm.detailedFrom.vergroupno = row.vergroupno.vergroupno
                                 vm.detailedFrom.platgroupno = row.platgroupno.platgroupno
@@ -1262,7 +1601,8 @@
                 this.dialogDetailFn = true;
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/findNumbersByObjId",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDirectBusObj/findNumbersByObjId",
                     qs.stringify({
                         objectno: vm.objdetail
                     })
@@ -1291,7 +1631,8 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/advertisement/delete",
+                    this.$http.post("http://" + vm.$store.state.common.server +
+                        "/business/advertisement/delete",
                         qs.stringify({
                             ruleid: row.ruleid
                         })
@@ -1318,13 +1659,13 @@
                     });
                 });
             },
-            // 下拉列表接口
-            apiFn(obj, arry) {
+            contentbusinessFn(typeCode, channel, arry) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
-                    qs.stringify(
-                        obj
-                    )).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListWithoutPage", qs.stringify({
+                    enabled: 1,
+                    type_code: typeCode,
+                    channel: channel
+                })).then(function (res) {
                     var code = res.data.retCode;
 
                     setTimeout(() => {
@@ -1339,59 +1680,19 @@
                     console.log(error)
                 })
             },
-            handleEdit(index, row) { // 点击编辑 弹窗           
-                this.$store.dispatch('LOAD', true);
-                this.editForm.ruleid = row.ruleid;
-                this.editForm.vergroupno = row.vergroupno;
-                this.editForm.objectno = row.objectno;
-                this.editForm.platgroupno = row.platgroupno;
-                this.editForm.pvgroupno = row.pvgroupno;
-                this.editForm.enable = row.enable;
-
-                var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
-                    "/business/tabDirectBusRule/findTheContactDirectBuses", qs.stringify({
-                        ruleid: row.ruleid
-                    })).then(function (res) {
-
-
-                    var code = res.data.retCode;
-                    setTimeout(() => {
-                        if (code == "000000") {
-                            vm.dialogEdit = true;
-                            vm.$store.dispatch('LOAD', false);
-                            if (res.data.retData.length) {
-                                if (vm.textarry.length > 0) {
-                                    vm.textarry.splice(1, vm.textarry.length);
-                                    for (var i = 0; i < res.data.retData.length; i++) {
-                                        vm.textarry.push({
-                                            text: res.data.retData[i].idx,
-                                            id: res.data.retData[i].title,
-                                            bianhao: res.data.retData[i].directbusno,
-                                        })
-
-                                    }
-                                };
-                            } else {
-                                vm.textarry[1].text = 1
-                                vm.textarry[1].id = ''
-                                vm.textarry[1].bianhao = []
-                            }
-
-                        } else {
-                            vm.errMsg('新增失败');
-                        }
-                    }, 1000);
-                }).catch(function (error) {
-                    console.log(error)
-                })
-                //this.$store.dispatch("JUMP_SERVICE", this.editForm.type);
-            }
         }
 
     }
 </script>
 <style>
+    .textG {
+        margin: 0;
+        padding: 0;
+        line-height: 37px;
+        padding-left: 10px;
+        color: red;
+    }
+
     .showimg {
         max-width: 300px;
     }

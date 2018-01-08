@@ -45,8 +45,10 @@
         <el-col :span="24">
             <el-button-group class="navBtn">
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
-                <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>发布</el-button>
+                <el-button type="primary" @click="handleReset" class="btnStyle">
+                    <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" v-if='add' @click="handleAdd">
+                    <i class="el-icon-plus el-icon--left"></i>发布</el-button>
             </el-button-group>
         </el-col>
         <!--表格-->
@@ -75,14 +77,14 @@
 
                 <el-table-column inline-template prop='enable' fixed="right" label="维护" width="160px">
                     <span>
-                           <el-button  type="text" v-if='row.auditStatusName=="驳回" && check' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <el-button type="text" v-if='row.auditStatusName=="驳回" && check' size="small" @click="handleDelete($index, row)">删除</el-button>
 
-                         <el-button  type="text" v-if='row.auditStatusName=="审核中" && check' size="small" @click="audit($index, row)">审核</el-button>
+                        <el-button type="text" v-if='row.auditStatusName=="审核中" && check' size="small" @click="audit($index, row)">审核</el-button>
 
-                          <el-button type="text" v-if='row.auditStatusName=="审核通过" && disable' size="small" @click="switchState($index, row)">禁用</el-button>
+                        <el-button type="text" v-if='row.auditStatusName=="审核通过" && disable' size="small" @click="switchState($index, row)">禁用</el-button>
 
-                          <el-button type="text" size="small" @click="showDetails($index,row)">查看详情</el-button>
-                         
+                        <el-button type="text" size="small" @click="showDetails($index,row)">查看详情</el-button>
+
                     </span>
                 </el-table-column>
 
@@ -149,9 +151,12 @@
                 <el-form-item label="内容图片" class="adCon" prop="content_image">
                     <el-input v-model="addForm.content_image" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
                     <el-upload :with-credentials='true' class="upload-demo" ref='titleUpload' drag accept="image/png,image/jpeg" :action="'http://'+this.$store.state.common.server+'/business/fileUpload/uploadfileToServer'"
-                        type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove" :on-success="uploadSuc">
+                        type="drag" mutiple :before-upload='beforeUpload' :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove"
+                        :on-success="uploadSuc">
                         <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将文件拖到此处，或
+                            <em>点击上传</em>
+                        </div>
                     </el-upload>
                 </el-form-item>
 
@@ -215,7 +220,7 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                
+
                 <el-row v-if='isaudit'>
                     <el-col :span='12'>
                         <el-form-item label="版本选择" prop="vergroupno">
@@ -376,7 +381,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -389,7 +393,8 @@
                     } else {
                         let str = 'http|https://www.xxxxx.xxx'
                         let reg =
-                            /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
+                            /^https?:\/\/\w+\..+$/
+                        // /^https?:\/\/(([a-zA-Z0-9_-])+(\.)?)*(:\d+)?(\/((\.)?(\?)?=?&?[a-zA-Z0-9_-](\?)?)*)*$/i
                         if (reg.test(value)) {
                             callback()
                         } else {
@@ -597,72 +602,24 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('view')
             },
             disable() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'disable') {
-
-                            return true;
-                        } else {}
-                    }
-                }
+                return this.$quanxian('disable')
             },
             check() {
-                if (this.$store.state.login.permissions["/ywgl/dxywfb"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxywgzgl"].add;
-                    let dxywgzglPage = this.$store.state.login.permissions["/ywgl/dxywfb"];
-                    for (let i = 0; i < dxywgzglPage.length; i++) {
-                        if (dxywgzglPage[i] == 'check') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('check')
             },
+
             aUrl() {
                 let str = this.detailedFrom.detail_url;
                 if (!str) {
@@ -677,6 +634,18 @@
 
         },
         methods: {
+
+            beforeUpload(file) {
+                let filename = file.name;
+                let fileReg = /\.(?:png|jpg|jpeg)$/i;
+                if (fileReg.test(filename)) {
+
+                } else {
+                    this.errMsg('请选择图片')
+                    return false;
+                }
+
+            },
             onChange(file, fileList) {
                 if (fileList.length > 1) {
                     fileList.splice(0, 1);
@@ -691,7 +660,8 @@
 
             idxsFn() {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDic/getListForCvAndPvAndPlatform",
                     qs.stringify({
                         channel: 'MPOS',
                         version: 1,
@@ -739,7 +709,8 @@
                 }
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListForCvAndPvAndPlatform",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDic/getListForCvAndPvAndPlatform",
                     qs.stringify({
                         channel: pvgroupno,
                         version: vergroupno,
@@ -764,7 +735,7 @@
             auditStatus(type) {
                 this.$store.dispatch('LOAD', true);
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/checkCommit", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/checkCommit", qs.stringify({
                     ruleid: vm.detailruleid,
                     auditStatus: type
                 })).then(function (res) {
@@ -808,7 +779,7 @@
                     // return;
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server +
+                    this.$http.post("http://" + vm.$store.state.common.server +
                         "/business/commonBusiness/updateIfUse", qs.stringify({
                             ruleid: row.ruleid,
                             auditStatus: 'DISABLED'
@@ -871,7 +842,7 @@
                 // console.log(this.addForm);
                 // return;
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -922,7 +893,8 @@
                     // vm.addForm.directbusno = [];
                     vm.addForm.directbusno = ''; // 现在传字符串 只能传一个
                 } else {
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/findRuleIfExsit",
+                    this.$http.post("http://" + vm.$store.state.common.server +
+                        "/business/tabDirectBusRule/findRuleIfExsit",
                         qs.stringify(
                             vm.addForm
                         )).then(function (res) {
@@ -958,7 +930,7 @@
                     vm.errMsg('请添加业务')
                     return;
                 }
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusRule/update", qs.stringify({
                     ruleid: vm.editForm.ruleid,
                     directbusno: vm.addForm.directbusno,
                     enable: '1'
@@ -985,7 +957,7 @@
 
                 var vm = this;
 
-                axios.post("http://" + vm.$store.state.common.server + "/business/menu/getListWithoutPage").then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/menu/getListWithoutPage").then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -1049,7 +1021,7 @@
                 var API = qs.stringify(
                     data
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/getList", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/getList", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -1162,10 +1134,11 @@
                 // }
 
                 vm.$store.dispatch('LOAD', true);
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getListForPublish", qs.stringify({
-                    idx: vm.addForm.idx
-                    // idx: index+1
-                })).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getListForPublish",
+                    qs.stringify({
+                        idx: vm.addForm.idx
+                        // idx: index+1
+                    })).then(function (res) {
                     var code = res.data.retCode;
 
                     setTimeout(() => {
@@ -1218,7 +1191,7 @@
 
                 vm.$store.dispatch('LOAD', true);
                 vm.objdetail = row.objectno;
-                axios.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/findByRule",
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/findByRule",
                     qs.stringify({
                         ruleid: row.ruleid
                     })
@@ -1233,16 +1206,16 @@
                                     vm.operation[item] = res.data.retData[item]
                                 }
 
-                            // console.log(vm.detailedFrom)
-                            vm.detailedFrom.idx=row.idx;
-                            vm.detailedFrom.pvgroupno=row.pvgroupno.pvgroupno
-                            vm.detailedFrom.vergroupno=row.vergroupno.vergroupno
-                            vm.detailedFrom.platgroupno=row.platgroupno.platgroupno
+                                // console.log(vm.detailedFrom)
+                                vm.detailedFrom.idx = row.idx;
+                                vm.detailedFrom.pvgroupno = row.pvgroupno.pvgroupno
+                                vm.detailedFrom.vergroupno = row.vergroupno.vergroupno
+                                vm.detailedFrom.platgroupno = row.platgroupno.platgroupno
 
-                           
-                
-                
-                            console.log(row);
+
+
+
+                                console.log(row);
 
 
 
@@ -1263,7 +1236,8 @@
                 this.dialogDetailFn = true;
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/findNumbersByObjId",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/tabDirectBusObj/findNumbersByObjId",
                     qs.stringify({
                         objectno: vm.objdetail
                     })
@@ -1292,7 +1266,8 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/commonBusiness/delete",
+                    this.$http.post("http://" + vm.$store.state.common.server +
+                        "/business/commonBusiness/delete",
                         qs.stringify({
                             ruleid: row.ruleid
                         })
@@ -1322,7 +1297,7 @@
             // 下拉列表接口
             apiFn(typeCode, channel, arry) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListWithoutPage", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListWithoutPage", qs.stringify({
                     enabled: 1,
                     type_code: typeCode,
                     channel: channel
@@ -1351,7 +1326,7 @@
                 this.editForm.enable = row.enable;
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/business/tabDirectBusRule/findTheContactDirectBuses", qs.stringify({
                         ruleid: row.ruleid
                     })).then(function (res) {

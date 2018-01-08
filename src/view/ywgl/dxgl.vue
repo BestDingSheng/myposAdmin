@@ -46,9 +46,9 @@
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="150px">
                     <span>
-                          <el-button type="danger" v-if='del && row.objname!="全体"' size="small" @click="handleDelete($index, row)">删除</el-button>
-                         <el-button type="primary" v-if='row.objname!="全体"' size="small" @click="switchState($index, row)">{{row.disable==0?'禁用':'可用'}}</el-button>
-                          <!-- <el-button type="primary" size="small" @click="handleEdit($index, row)">编辑</el-button> -->
+                        <el-button type="danger" v-if='del && row.objname!="全体"' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <el-button type="primary" v-if='row.objname!="全体"' size="small" @click="switchState($index, row)">{{row.disable==0?'禁用':'可用'}}</el-button>
+                        <!-- <el-button type="primary" size="small" @click="handleEdit($index, row)">编辑</el-button> -->
                     </span>
                 </el-table-column>
             </el-table>
@@ -77,7 +77,9 @@
                         type="drag" mutiple :on-change='onChange' :before-upload='beforeUpload' :on-preview="handlePreview" :on-remove="handleRemove"
                         :on-success="uploadSuc">
                         <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将文件拖到此处，或
+                            <em>点击上传</em>
+                        </div>
                     </el-upload>
                 </el-form-item>
             </el-form>
@@ -111,7 +113,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -124,7 +125,7 @@
                 formInline: {
                     objname: '',
                     disable: '',
-                    size:10,
+                    size: 10,
                     enable: '',
                     page: ''
                 },
@@ -168,51 +169,19 @@
             this.handleSearch();
         },
         computed: {
-
             add() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
+
         },
         methods: {
             switchState(index, row) {
@@ -224,10 +193,11 @@
                 } else {
                     disable = 0
                 }
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/updateIfUse", qs.stringify({
-                    id: row.id,
-                    disable: disable
-                })).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/updateIfUse", qs
+                    .stringify({
+                        id: row.id,
+                        disable: disable
+                    })).then(function (res) {
                     var code = res.data.retCode;
                     setTimeout(() => {
                         if (code == "000000") {
@@ -280,9 +250,10 @@
             },
             judegRepeat(callback) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/findByObjname", qs.stringify({
-                    objname: vm.addForm.objname
-                })).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/findByObjname",
+                    qs.stringify({
+                        objname: vm.addForm.objname
+                    })).then(function (res) {
                     var code = res.data.retCode;
 
                     setTimeout(() => {
@@ -299,7 +270,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -323,7 +294,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/update", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/update", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -345,7 +316,7 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/getList/", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/getList/", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -364,7 +335,7 @@
                                 for (let i = 0; i < data.length; i++) {
 
                                     if (data[i].objname == '全体') {
-                                        
+
                                         aAarray.push(data[i]);
                                     } else {
                                         bAarray.push(data[i]);
@@ -375,7 +346,7 @@
                                 vm.tableData = results;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败'+msg);
+                                vm.errMsg('查询失败' + msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -408,6 +379,7 @@
                 this.$refs.formInline.resetFields();
             },
             handleAdd() {
+                console.table(this.$route);
                 this.dialogAdd = true; // 点击新增 弹窗
                 // this.$store.dispatch("JUMP_SERVICE", this.addForm.type);
             },
@@ -419,9 +391,9 @@
             //     console.log(file);
             // },
             handleSizeChange(val) {
-                
+
                 console.log(`每页 ${val} 条`);
-                this.formInline.size=val;
+                this.formInline.size = val;
                 this.handleSearch();
             },
 
@@ -436,7 +408,8 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/delete/",
+                    this.$http.post("http://" + vm.$store.state.common.server +
+                        "/business/tabDirectBusObj/delete/",
                         qs.stringify({
                             id: row.id
                         })

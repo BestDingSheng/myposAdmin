@@ -24,6 +24,8 @@
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
                 <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
                 <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新建</el-button>
+             <!--   <el-button type="primary" v-if='add' @click="handleDownload">导出</el-button>
+                -->
             </el-button-group>
         </el-col>
         <!--表格-->
@@ -102,7 +104,7 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
+    import {permissionsFn} from 'assets/common.js'
     var qs = require("qs");
     export default {
         data() {
@@ -154,58 +156,55 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/ptgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/ptgl"].add;
-                    let ptglPage = this.$store.state.login.permissions["/ywgl/ptgl"];
-                    for (let i = 0; i < ptglPage.length; i++) {
-                        if (ptglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/ptgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/ptgl"].add;
-                    let ptglPage = this.$store.state.login.permissions["/ywgl/ptgl"];
-                    for (let i = 0; i < ptglPage.length; i++) {
-                        if (ptglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/ptgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/ptgl"].add;
-                    let ptglPage = this.$store.state.login.permissions["/ywgl/ptgl"];
-                    for (let i = 0; i < ptglPage.length; i++) {
-                        if (ptglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/ptgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/ptgl"].add;
-                    let ptglPage = this.$store.state.login.permissions["/ywgl/ptgl"];
-                    for (let i = 0; i < ptglPage.length; i++) {
-                        if (ptglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
+
         },
         mounted() {
             this.handleSearch();
-
         },
-        updated() {
+        updated(){
             console.log(this.add)
         },
         methods: {
+
+
+        
+
+
+            handleDownload() {
+                // platgroupno: '',
+                // plats: '',
+                // enable: '',
+                // size: 10,
+                // createtime: '',
+                // page: ''
+
+                require.ensure([], () => {
+                    const {
+                        export_json_to_excel
+                    } = require('assets/vendor/Export2Excel');
+                    const tHeader = ['平台管理', '渠道', '添加时间'];
+                    const filterVal = ['platgroupno','plats','createtime'];
+                    const list = this.tableData;
+                    const data = this.formatJson(filterVal, list);
+                    export_json_to_excel(tHeader, data, '列表excel');
+                })
+            },
+            formatJson(filterVal, jsonData) {
+                return jsonData.map(v => filterVal.map(j => v[j]))
+            },
+
+
             test(row, column) {
                 if (row.enable == 1) {
                     return "可用"
@@ -229,7 +228,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -253,7 +252,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/update", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/update", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -276,7 +275,7 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/getList/", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/getList/", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -350,7 +349,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/delete/",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPlatform/delete/",
                         qs.stringify({
                             platgroupno: row.platgroupno
                         })

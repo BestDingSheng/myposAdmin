@@ -36,14 +36,16 @@
         <el-col :span="24">
             <el-button-group class="navBtn">
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
-                <el-button type="primary" @click="handleReset" class="btnStyle"><i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
-                <el-button type="primary" v-if='add' @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新建</el-button>
+                <el-button type="primary" @click="handleReset" class="btnStyle">
+                    <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" v-if='add' @click="handleAdd">
+                    <i class="el-icon-plus el-icon--left"></i>新建</el-button>
             </el-button-group>
         </el-col>
         <!--表格-->
         <el-col :span="24">
             <el-table :data="tableData" border>
-                <el-table-column fixed type="index" label="序号" width="80">
+                <el-table-column type="index" label="序号" width="80">
                 </el-table-column>
                 <el-table-column prop="title" label="标题" width="130px">
                 </el-table-column>
@@ -57,8 +59,8 @@
                 </el-table-column>
                 <el-table-column inline-template fixed="right" label="维护" width="150px">
                     <span>
-                          <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
-                          <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button> 
+                        <el-button type="danger" v-if='del' size="small" @click="handleDelete($index, row)">删除</el-button>
+                        <el-button type="primary" v-if='update' size="small" @click="handleEdit($index, row)">编辑</el-button>
                     </span>
                 </el-table-column>
             </el-table>
@@ -90,7 +92,9 @@
                                 type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove"
                                 :on-success="uploadSuc">
                                 <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                <div class="el-upload__text">将文件拖到此处，或
+                                    <em>点击上传</em>
+                                </div>
                             </el-upload>
                         </el-form-item>
                         <!--
@@ -155,7 +159,9 @@
                                     type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :before-upload='brforeUpload'
                                     :on-remove="handleRemove1" :on-success="uploadSuc1">
                                     <i class="el-icon-upload"></i>
-                                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                    <div class="el-upload__text">将文件拖到此处，或
+                                        <em>点击上传</em>
+                                    </div>
                                 </el-upload>
                             </el-form-item>
 
@@ -235,7 +241,9 @@
                                 type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove"
                                 :on-success="uploadSuc">
                                 <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                <div class="el-upload__text">将文件拖到此处，或
+                                    <em>点击上传</em>
+                                </div>
                             </el-upload>
                         </el-form-item>
                         <!--
@@ -300,7 +308,9 @@
                                     type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :on-remove="handleRemove1"
                                     :on-success="uploadSuc1">
                                     <i class="el-icon-upload"></i>
-                                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                    <div class="el-upload__text">将文件拖到此处，或
+                                        <em>点击上传</em>
+                                    </div>
                                 </el-upload>
                             </el-form-item>
 
@@ -364,7 +374,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -777,49 +786,17 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/dxyw"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxyw"].add;
-                    let dxywPage = this.$store.state.login.permissions["/ywgl/dxyw"];
-                    for (let i = 0; i < dxywPage.length; i++) {
-                        if (dxywPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/dxyw"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxyw"].add;
-                    let dxywPage = this.$store.state.login.permissions["/ywgl/dxyw"];
-                    for (let i = 0; i < dxywPage.length; i++) {
-                        if (dxywPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/dxyw"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxyw"].add;
-                    let dxywPage = this.$store.state.login.permissions["/ywgl/dxyw"];
-                    for (let i = 0; i < dxywPage.length; i++) {
-                        if (dxywPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/dxyw"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxyw"].add;
-                    let dxywPage = this.$store.state.login.permissions["/ywgl/dxyw"];
-                    for (let i = 0; i < dxywPage.length; i++) {
-                        if (dxywPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
         },
         methods: {
             change(val) {
@@ -846,7 +823,7 @@
             },
             apiFn(typeCode, channel, arry) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListWithoutPage", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDic/getListWithoutPage", qs.stringify({
                     enabled: 1,
                     type_code: typeCode,
                     channel: channel
@@ -928,7 +905,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -963,7 +940,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/update", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/update", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -986,7 +963,7 @@
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getList/", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/getList/", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -1002,7 +979,7 @@
                                 vm.tableData = data;
                                 callback;
                             } else {
-                                vm.errMsg('查询失败'+msg);
+                                vm.errMsg('查询失败' + msg);
                             }
                         }, 1000);
                     }).catch(function (error) {
@@ -1066,7 +1043,8 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/delete/",
+                    this.$http.post("http://" + vm.$store.state.common.server +
+                        "/business/tabDirectBus/delete/",
                         qs.stringify({
                             directbusno: row.directbusno
                         })
@@ -1109,7 +1087,7 @@
 
                 var vm = this;
                 vm.isEdit = true;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/findByDirectbusno",
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBus/findByDirectbusno",
                     qs.stringify({
                         directbusno: row.directbusno
                     })

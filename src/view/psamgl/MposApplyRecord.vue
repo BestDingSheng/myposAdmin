@@ -1,4 +1,4 @@
-<!--  业务管理>Mpos 申请记录 -->
+<!--  业务管理>Mpos交押金记录 -->
 <template>
     <el-row>
         <el-col :span="24" class="toolbar">
@@ -7,10 +7,19 @@
                 <el-form-item prop="psamNo">
                     <el-input v-model="formInline.psamNo" placeholder="psam卡号"></el-input>
                 </el-form-item>
-                <el-form-item prop="merId" label='商户号' label-width="70px">
-                    <el-input v-model="formInline.merId" placeholder="商户号"></el-input>
+                <el-form-item prop="mobileNo" label='销售人员手机号' label-width="120px">
+                    <el-input v-model="formInline.mobileNo" placeholder="销售人员手机号"></el-input>
                 </el-form-item>
-                <el-form-item label="申请时间" label-width="80px">
+                <el-form-item prop="arrivalStandard" label='是否达到返回标准' label-width="140px">
+                    <el-select v-model="formInline.arrivalStandard" placeholder="请选择">
+                        <el-option label="是" value="1"></el-option>
+                        <el-option label="否" value="0"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="userMobile" label='注册人手机号' label-width="100px">
+                    <el-input v-model="formInline.userMobile" placeholder="注册人手机号"></el-input>
+                </el-form-item>
+                <el-form-item label="申请时间" label-width="90px">
                     <el-date-picker v-model="createdTimeRange" type="datetimerange" placeholder="请选择时间范围" style="width:320px;"></el-date-picker>
                 </el-form-item>
             </el-form>
@@ -21,6 +30,13 @@
                 <el-button type="primary" icon="search" @click="handleSearch">搜索</el-button>
                 <el-button type="primary" @click="handleReset" class="btnStyle">
                     <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
+                <el-button type="primary" @click="exportFn" v-if='add' class="btnStyle">
+                    <!-- <a href="http://10.7.111.196:9999/mposmsNew/business/mposLeaseApply/exportData"> -->
+                    <i class="iconfonts icon-reset el-icon--left"></i>导出
+
+                    <!-- </a> -->
+                </el-button>
+
                 <!--
                 <el-button type="primary" @click="handleAdd" v-if='add'>
                     <i class="el-icon-plus el-icon--left"></i>新建</el-button>
@@ -32,13 +48,21 @@
             <el-table :data="tableData" border>
                 <el-table-column type="index" label="序号" width="80">
                 </el-table-column>
+                <!--
                 <el-table-column prop="merId" label="商户号" width='200'>
                 </el-table-column>
+                -->
                 <el-table-column prop="psamNo" label="psam卡号" width="200">
                 </el-table-column>
-                <el-table-column prop="mobileNo" label="手机号码" width="140">
+                <el-table-column prop="mobileNo" label="销售人员手机号" width="140">
+                </el-table-column>
+                <el-table-column prop="userMobile" label="注册人手机号" width="140">
                 </el-table-column>
                 <el-table-column prop="applyTime" label="申请时间" width="200">
+                </el-table-column>
+                <el-table-column prop="arrivalStandard" label="是否到达返还标准" width="200">
+                </el-table-column>
+                <el-table-column prop="tabMposLeaseTotalTrade.totalAmt" label="截止昨日累计交易金额" width="200">
                 </el-table-column>
 
 
@@ -46,9 +70,9 @@
                 <el-table-column prop="backDepositDate" label="押金返还日期" width="140">
                 </el-table-column>
                 -->
-            
+
                 </el-table-column>
-            <!--
+                <!--
                 <el-table-column inline-template fixed="right" label="维护" width="150px">
                     <span>
                           <el-button type="danger" v-if='del && row.objname!="全体"' size="small" @click="caozuo($index, row)">押金状态更换</el-button>                  
@@ -75,7 +99,9 @@
                         type="drag" mutiple :on-change='onChange' :before-upload='beforeUpload' :on-preview="handlePreview" :on-remove="handleRemove"
                         :on-success="uploadSuc">
                         <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将文件拖到此处，或
+                            <em>点击上传</em>
+                        </div>
                     </el-upload>
                 </el-form-item>
             </el-form>
@@ -109,7 +135,6 @@
     </el-row>
 </template>
 <script>
-    import axios from 'axios'
     import {
         dealTime
     } from 'assets/common'
@@ -127,8 +152,11 @@
                 formInline: {
                     startTime: '',
                     endTime: '',
+                    mobileNo: '',
+                    arrivalStandard: '',
                     size: 10,
                     // enable: '',
+                    userMobile: '',
                     page: '',
 
                     merId: '',
@@ -174,51 +202,57 @@
         computed: {
 
             add() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('add')
             },
             del() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('delete')
             },
             update() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
+                return this.$quanxian('update')
             },
             view() {
-                if (this.$store.state.login.permissions["/ywgl/dxgl"]) {
-                    // return this.$store.state.login.permissions["/ywgl/dxgl"].add;
-                    let dxglPage = this.$store.state.login.permissions["/ywgl/dxgl"];
-                    for (let i = 0; i < dxglPage.length; i++) {
-                        if (dxglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+                return this.$quanxian('view')
+            },
         },
         methods: {
+            // 手机号脱敏
+            phone(row) {
+                if (row.userMobile) {
+                    // console.log(row.userMobile)
+                    return row.userMobile.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+                } else {
+                    return row.userMobile
+                }
+            },
+            // 导出
+            exportFn() {
+                let vm = this;
+                vm.formInline.totalLength = vm.totalPages;
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/mposLeaseApply/exportData", qs.stringify(
+                    vm.formInline
+                )).then(function (res) {
+                    var code = res.data.retCode;
+                    setTimeout(() => {
+
+                        console.log(res);
+                        if (code == "000000") {
+                            let filePath = res.data.retData;
+                            console.log(
+                                `http://${vm.$store.state.common.server}/business/mposLeaseApply/download?filePath=${filePath}`
+                            )
+                            window.open(
+                                `http://${vm.$store.state.common.server}/business/mposLeaseApply/download?filePath=${filePath}`,
+                                '_self')
+
+                        } else {
+                            vm.$store.dispatch('LOAD', false);
+                            vm.errMsg('操作失败');
+                        }
+                    }, 1000);
+                }).catch(function (error) {
+                    console.log(error)
+                })
+            },
             yuan(row, clo) {
                 //    return row.totalAmt+' 元'
                 return row.totalAmt.replace(/\B(?=(?:\d{3})+(?!\d))/g, ",") + '.00元'
@@ -232,10 +266,11 @@
                 } else {
                     disable = 0
                 }
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/updateIfUse", qs.stringify({
-                    id: row.id,
-                    disable: disable
-                })).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/updateIfUse", qs
+                    .stringify({
+                        id: row.id,
+                        disable: disable
+                    })).then(function (res) {
                     var code = res.data.retCode;
                     setTimeout(() => {
                         if (code == "000000") {
@@ -253,7 +288,8 @@
                 console.log(row);
                 let isBackDeposit = row.isBackDeposit == '00' ? '01' : "00";
                 let vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/mposLeaseTotalTrade/updateStatus", qs
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/business/mposLeaseTotalTrade/updateStatus", qs
                     .stringify({
                         psamNo: row.psamNo,
                         isBackDeposit: isBackDeposit
@@ -304,9 +340,10 @@
             },
             judegRepeat(callback) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/findByObjname", qs.stringify({
-                    objname: vm.addForm.objname
-                })).then(function (res) {
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/findByObjname",
+                    qs.stringify({
+                        objname: vm.addForm.objname
+                    })).then(function (res) {
                     var code = res.data.retCode;
 
                     setTimeout(() => {
@@ -323,7 +360,7 @@
             },
             addFn() { //新增 方法
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabPsam/save", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPsam/save", qs.stringify(
                     vm.addForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -347,7 +384,7 @@
             },
             updateFn() { //修改
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/update", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/tabDirectBusObj/update", qs.stringify(
                     vm.editForm
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -372,16 +409,15 @@
                         eT = this.createdTimeRange[1];
                     this.formInline.startTime = dealTime(sT);
                     this.formInline.endTime = dealTime(eT);
+                } else {
+                    this.formInline.startTime = '';
+                    this.formInline.endTime = '';
                 }
-                // else {
-                //     this.formInline.startTime = '';
-                //     this.formInline.endTime = '';
-                // }
 
                 var API = qs.stringify(
                     vm.formInline
                 );
-                axios.post("http://" + vm.$store.state.common.server + "/business/mposLeaseApply/getList", API).then(
+                this.$http.post("http://" + vm.$store.state.common.server + "/business/mposLeaseApply/getList", API).then(
                     function (
                         res) {
                         var code = res.data.retCode;
@@ -429,6 +465,7 @@
             },
             handleReset() { //重置
                 this.$refs.formInline.resetFields();
+                this.createdTimeRange = [];
             },
             handleAdd() {
                 this.dialogAdd = true; // 点击新增 弹窗
@@ -459,7 +496,7 @@
                 }).then(() => {
                     var vm = this;
                     vm.$store.dispatch('LOAD', true);
-                    axios.post("http://" + vm.$store.state.common.server + "/business/tabPsam/delete",
+                    this.$http.post("http://" + vm.$store.state.common.server + "/business/tabPsam/delete",
                         qs.stringify({
                             id: row.id
                         })

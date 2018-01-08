@@ -274,7 +274,6 @@
 
 </template>
 <script>
-    import axios from 'axios'
     var qs = require("qs");
     export default {
         data() {
@@ -431,7 +430,7 @@
                 e.stopPropagation();
                 var id = e.currentTarget.getAttribute('data-id');
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/managerBam/resource/delAuthSystemResourceRoot", qs.stringify({
                         id: id
                     })).then(function (res) {
@@ -456,7 +455,7 @@
             },
             edittableview(menuId) {
                 var me = this;
-                axios.post("http://" + me.$store.state.common.server +
+                this.$http.post("http://" + me.$store.state.common.server +
                     "/managerBam/resource/selectAuthSystemResourceById", qs.stringify({
                         id: menuId
                     })).then(function (res) {
@@ -509,7 +508,7 @@
                 me.edittableview(menuId);
 
 
-                // axios.post("http://" + me.$store.state.common.server +
+                // this.$http.post("http://" + me.$store.state.common.server +
                 //     "/managerBam/resource/selectAuthSystemResourceById", qs.stringify({
                 //         id: menuId
                 //     })).then(function (res) {
@@ -564,7 +563,7 @@
 
                 me.$store.dispatch('LOAD', true);
 
-                axios.post("http://" + me.$store.state.common.server +
+                this.$http.post("http://" + me.$store.state.common.server +
                     "/managerBam/resource/addAuthSystemResourceRoot", qs.stringify(
                         me.addMenuNodeData
                     )).then(function (res) {
@@ -590,7 +589,7 @@
             },
             listall() {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listAllMenu", qs.stringify(
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listAllMenu", qs.stringify(
 
                 )).then(function (res) {
                     var code = res.data.retCode;
@@ -612,7 +611,7 @@
             },
             menuInfoSave() {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/resource/updateAuthSystemResource",
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/resource/updateAuthSystemResource",
                     qs.stringify(
                         vm.focusMenuBaseInfoData
                     )).then(function (res) {
@@ -637,7 +636,7 @@
             },
             focusMenuFuncDatafn(id) {
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/managerBam/resource/listSytemsoperateBySourceId",
                     qs.stringify({
                         id: id
@@ -659,7 +658,7 @@
             menuFuncAllDatafn() {
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/managerBam/resource/listSytemsoperateBySourceId",
                     qs.stringify({
 
@@ -692,7 +691,7 @@
                 }
 
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/managerBam/resource/addSysFunction",
                     qs.stringify({
                         operatecode: row.operatecode,
@@ -721,7 +720,7 @@
                 console.log(index);
                 //  return;
                 var vm = this;
-                axios.post("http://" + vm.$store.state.common.server +
+                this.$http.post("http://" + vm.$store.state.common.server +
                     "/managerBam/resource/delAuthSystemFunctionByID",
                     qs.stringify({
                         id: row.systemFunctionId,

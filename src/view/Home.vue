@@ -161,7 +161,7 @@
             },
             getUserInfo() {
                 let vm = this;
-                axios.get("http://" + vm.$store.state.common.server +
+                vm.$http.get("http://" + vm.$store.state.common.server +
                     "/getUserInfo",
                     qs.stringify({})).then(function (res) {
                     var code = res.data.retCode;
@@ -170,8 +170,9 @@
                     setTimeout(() => {
                         if (code == "000000") {
                             vm.loginInfos = data;
-                            // localStorage.setItem('roleName',data.roleName);
+                            localStorage.setItem('roleName',data.roleName);
                             vm.$store.dispatch('roleName', data.roleName);
+                            
                         } else {
                             vm.$message({
                                 type: 'error',
@@ -194,10 +195,8 @@
                 vm.$refs.pass.validate(valid => {
                     if (valid) {
 
-                        // vm.updatePwdShow = false;
-                        var vm = this;
-
-                        axios.post("http://" + vm.$store.state.common.server +
+            
+                        vm.$http.post("http://" + vm.$store.state.common.server +
                             "/modifyPwd",
                             qs.stringify({
                                 id: vm.pass.id,
@@ -222,10 +221,6 @@
                         }).catch(function (error) {
                             console.log(error)
                         })
-
-
-
-
                     }
                 })
             }

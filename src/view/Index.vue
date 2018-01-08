@@ -69,7 +69,7 @@
         computed: {
             roleName() {
                 //return localStorage.getItem('roleName')
-                return this.$store.state.login.roleName;
+                return this.$store.state.login.roleName || localStorage.getItem('roleName');
 
             }
         },
@@ -77,10 +77,11 @@
             const panelAside = this.$refs.panelAside;
             const windowH = document.documentElement.clientHeight;
             // panelAside.style.height = windowH + "px";
-
-            if (localStorage.getItem("title")) {
+            const pathRouter = this.$router.history.current.fullPath;
+            if (localStorage.getItem("title") &&pathRouter!='/') {
                 this.currentPathName = localStorage.getItem("title");
             }
+
             this.username = this.$store.state.login.username;
 
             this.menuFn();
@@ -106,7 +107,7 @@
                 var id = localStorage.getItem('userid');
                 var vm = this;
 
-                axios.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listUserMenu", qs.stringify({
+                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/menu/listUserMenu", qs.stringify({
                     id: id
                 })).then(function (res) {
                     var code = res.data.retCode;
@@ -115,8 +116,6 @@
                             let data = res.data.retData;
                             //  vm.menuData=data;
                             vm.$store.dispatch('setMenuData', data);
-
-
                             // quanxian 
                             let fnObj = {};
                             let func = {};
@@ -129,12 +128,22 @@
 
                                     }
                                 }
-
                             };
 
-                            //console.log(fnObj);
-                            vm.$store.dispatch('permissions', fnObj);
+                            for (let i = 0; i < data.length; i++) {
+                                for (let c = 0; c < data[i].children.length; c++) {
+                                    for (let j = 0; j < data[i].children[c].children.length; j++) {
+                                        let pArr = [];
+                                        for(let a= 0; a<data[i].children[c].children[j].aSystemFunctions.length;a++){
+                                            pArr.push(data[i].children[c].children[j].aSystemFunctions[a].operatecode)
+                                            func[data[i].children[c].children[j].url] = pArr;
+                                        }                               
+                                    }
+                                }
+                            };
 
+                            var quanxianObj = Object.assign(func, fnObj);
+                            vm.$store.dispatch('permissions', quanxianObj);
                             vm.$store.dispatch('LOAD', false);
                         } else {
                             //('查询失败');
