@@ -1,6 +1,6 @@
 <!--商户信息查询-->
 <template>
-    <el-row>
+    <el-row @keydown.enter.native="handleSearch()" tabindex="0" style="outline:none">
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="formInline" ref="formInline">
                 <el-form-item label="精确搜索:" label-width="90px"></el-form-item>
@@ -426,6 +426,9 @@
                     }
                 }
             }
+        },
+        mounted() {
+            this.handleSearch();
         },
         methods: {
             D0StatusFormatter(row) {
@@ -856,7 +859,7 @@
                             vm.totalPages = res.data.retData.totalPages;
                             vm.number = parseInt(res.data.retData.currentPage)
                             vm.totalElements = res.data.retData.totalNum;
-                            var data = res.data.retData.data;
+                            var data = res.data.retData.data ? res.data.retData.data : [];
                             if (data[0] && JSON.stringify(data[0]) == '{}') {
                                 vm.tableData = [];
                             } else {

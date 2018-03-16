@@ -548,7 +548,7 @@
                 console.log(arguments[0])
             },
             sizeChange(size) {
-                alert(size)
+                
             },
 
             idxsFn() {
@@ -761,7 +761,7 @@
 
             },
             alertfn() {
-                alert('成功');
+               
             },
             findFn(callback) {
                 console.log(this.addForm.directbusno)

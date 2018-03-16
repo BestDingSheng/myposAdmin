@@ -59,26 +59,21 @@
                     <i class="iconfonts icon-reset el-icon--left"></i>重置</el-button>
                 <el-button type="primary" v-if='add' @click="handleAdd">
                     <i class="el-icon-plus el-icon--left"></i>发布</el-button>
+
+                    <el-button type="primary" v-if='refr' @click="refresh">
+                    </i>mpos广告刷新</el-button>
             </el-button-group>
+ 
         </el-col>
         <!--表格-->
         <el-col :span="24">
             <el-table :data="tableData" border :default-sort="{prop: 'date', order: 'ascending'}">
                 <el-table-column type="index" label="序号" width='70'>
                 </el-table-column>
-
-                <el-table-column prop="directbusno.contenttypeName" label="版面" width='160'></el-table-column>
+                <el-table-column prop="directbusno.contenttypeName" label="版面" width='100'></el-table-column>
                 <el-table-column prop="idxText" label="广告帧" width='100'></el-table-column>
-                <el-table-column prop="directbusno.title" label="广告名称" width='150'></el-table-column>
-                <el-table-column prop="pvgroupno.pvs" label="渠道"></el-table-column>
-                <el-table-column prop="vergroupno.vers" label="版本"></el-table-column>
-                <el-table-column prop="platgroupno.plats" label="平台" width='120'> </el-table-column>
-                <el-table-column prop="publishStatusName" label="状态">
-
-                    <template scope="scope">
-                        <div :class="{ success:scope.row.publishStatusName=='上架',error:scope.row.publishStatusName=='',warning:scope.row.publishStatusName=='未上架'}">{{ scope.row.publishStatusName }}</div>
-                    </template>
-                </el-table-column>
+                <el-table-column prop="directbusno.title" label="广告名称" width='100'></el-table-column>
+                <el-table-column prop="platgroupno.plats" label="平台" width='100'> </el-table-column>
                 <el-table-column prop="auditStatusName" label="审核状态" width='100px'>
                     <template scope="scope">
                         <div :class="{ success:scope.row.auditStatusName=='审核通过',error:scope.row.auditStatusName=='驳回',warning:scope.row.auditStatusName=='审核中'}">{{ scope.row.auditStatusName }}</div>
@@ -88,6 +83,15 @@
                 <el-table-column prop="updatetime" label="状态时间" width="200" sortable>
                 </el-table-column>
 
+                <el-table-column prop="pvgroupno.pvs" label="渠道" width='100'></el-table-column>
+                <el-table-column prop="vergroupno.vers" label="版本" width='100'></el-table-column>
+                <el-table-column prop="publishStatusName" label="状态" width='100'>
+
+                    <template scope="scope">
+                        <div :class="{ success:scope.row.publishStatusName=='上架',error:scope.row.publishStatusName=='',warning:scope.row.publishStatusName=='未上架'}">{{ scope.row.publishStatusName }}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="directbusno.directbusno" label="广告ID" width='295'></el-table-column>
                 <el-table-column inline-template prop='enable' fixed="right" label="维护" width="180px">
                     <span>
                         <el-button type="text" v-if='row.auditStatusName=="驳回" && check' size="small" @click="handleDelete($index, row)">删除</el-button>
@@ -301,7 +305,7 @@
                 <el-row v-if="isaudit && auditGuanggao">
                     <el-col :span='12'>
                         <el-form-item label="广告帧" prop="idx">
-                            <el-select v-model="addForm.idx" :disabled='true' placeholder="请选择" @change="validationKey">
+                            <el-select v-model="detailedFrom.idx" :disabled='true' placeholder="请选择" @change="validationKey">
                                 <el-option v-for="item in guanggao" :key='item.id' :label="item.text" :value="item.id"></el-option>
                             </el-select>
                         </el-form-item>
@@ -533,15 +537,15 @@
                         callback()
                     } else {
 
-                         callback(new Error(str))
-                 
+                        callback(new Error(str))
+
                     }
                 } else {
                     if (this.addForm.content_url_title) {
-                            callback(new Error('请填写url'))
-                        } else {
-                            callback()
-                        }
+                        callback(new Error('请填写url'))
+                    } else {
+                        callback()
+                    }
 
                 }
 
@@ -812,6 +816,10 @@
             }
         },
         computed: {
+            refr(){
+                return localStorage.getItem('roleName')=="超级管理员"?true:false;
+                
+            },
             banben() {
                 return this.addForm.vergroupno
             },
@@ -851,6 +859,28 @@
 
         },
         methods: {
+            refresh() {
+                
+                let me = this;
+                me.$store.dispatch('LOAD', true);
+                this.$http.get('http://' + me.$store.state.common.server +
+                        '/business/advertisement/refreshAdvertisement', qs.stringify(
+                            // obj
+                        ))
+                    .then(function (res) {
+                        if (res.data.retCode == '000000') {
+                            setTimeout(() => {
+                            
+                                me.$store.dispatch('LOAD', false);
+                                me.sucMsg('操作成功')
+                                // me.handleSearch(me.formInline.page)
+                            }, 2000)
+                        }else{
+                            me.$store.dispatch('LOAD', false);
+                            me.errMsg('操作失败')
+                        }
+                    })
+            },
             zhiding(row) {
                 let d1 = row.auditStatusName;
                 let d2 = row.publishStatusName;
@@ -1274,7 +1304,7 @@
 
             },
             alertfn() {
-                alert('成功');
+
             },
             findFn(callback) {
                 console.log(this.addForm.directbusno)
@@ -1368,10 +1398,26 @@
                         var message = res.data.retMsg;
                         setTimeout(() => {
                             if (code == "000000") {
-                                vm.vergroupno = res.data.retData.cv;
+                                // vm.vergroupno = res.data.retData.cv;
+
                                 vm.objectno = res.data.retData.obj;
                                 vm.platgroupno = res.data.retData.plat;
                                 vm.pvgroupno = res.data.retData.pv;
+
+                                //  过滤版本全体
+                                let cv = res.data.retData.cv;
+                                let id;
+                                for (let i = 0; i < cv.length; i++) {
+                                    if (cv[i].text == "V5.2.0") {
+                                        id = cv[i].id;
+                                    }
+                                }
+                                vm.vergroupno = cv.filter(function (item) {
+                                    if (id <= item.id) {
+                                        return item;
+                                    }
+                                })
+
 
                             } else {
                                 vm.errMsg('查询失败');
@@ -1575,14 +1621,13 @@
                                     vm.detailedFrom[item] = res.data.retData[item];
                                     vm.operation[item] = res.data.retData[item]
                                 }
-                                // 
-
-                                // (res.data.retData.contenttype=='SPLASH' || res.data.retData.contenttype=='DAIKUAI')?vm.isshow=false:vm.isshow=true;
-
-                                // vm.detailedFrom.contenttype = row.directbusno.contenttypeName;
+                                // console.log(row)
                                 vm.detailedFrom.pvgroupno = row.pvgroupno.pvgroupno
                                 vm.detailedFrom.vergroupno = row.vergroupno.vergroupno
                                 vm.detailedFrom.platgroupno = row.platgroupno.platgroupno
+                                vm.detailedFrom.idx = row.idxText
+
+
                                 // 
                                 vm.showDetailsDog = true;
                                 vm.$store.dispatch('LOAD', false);

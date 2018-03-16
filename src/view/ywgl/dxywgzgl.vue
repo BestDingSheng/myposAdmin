@@ -431,7 +431,7 @@
 
             },
             alertfn() {
-                alert('成功');
+
             },
             findFn(callback) {
                 var vm = this;

@@ -155,7 +155,7 @@
                             </el-form-item>
                             <el-form-item label="内容图片" class="adCon" prop="content_image">
                                 <el-input v-model="addForm.content_image" :disabled="true" placeholder="请上传图片" style="margin-bottom:20px;"></el-input>
-                                <el-upload class="upload-demo" :disabled='true' ref='titleUpload1' drag accept="image/png,image/jpeg" :action="'http://'+this.$store.state.common.server+'/business/fileUpload/uploadfileToServer'"
+                                <el-upload class="upload-demo"  ref='titleUpload1' drag accept="image/png,image/jpeg" :action="'http://'+this.$store.state.common.server+'/business/fileUpload/uploadfileToServer'"
                                     type="drag" mutiple :on-change='onChange' :on-preview="handlePreview" :before-upload='brforeUpload'
                                     :on-remove="handleRemove1" :on-success="uploadSuc1">
                                     <i class="el-icon-upload"></i>
@@ -887,7 +887,7 @@
             },
             handlePreview(file) {
                 console.log(file);
-                alert(file);
+            
             },
             sucMsg(msg) { // 成功信息
                 var vm = this;

@@ -1,15 +1,15 @@
 <!--  业务管理>商户注册日志-->
 <template>
-    <div>
+    <el-row @keydown.enter.native="handleSearch()" tabindex="0" style="outline:none">
         <el-row>
             <el-col :span="24" class="toolbar">
                 <el-form :inline="true" :model="searchData" label-width='120px' ref="searchForm">
                     <el-form-item label="用户编号" prop="userId">
                         <el-input v-model="searchData.userId" placeholder="请输入用户编号"></el-input>
                     </el-form-item>
-                    <el-form-item label="手机号码" prop="mobile">
+                    <!-- <el-form-item label="手机号码" prop="mobile">
                         <el-input v-model="searchData.mobile" placeholder="请输入手机号码"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                 </el-form>
             </el-col>
         </el-row>
@@ -105,7 +105,7 @@
         </el-row> -->
 
 
-    </div>
+    </el-row>
 </template>
 <script>
     import qs from "qs";
@@ -120,8 +120,8 @@
                 searchData: {
                     // page: 1, // 当前页码
                     // size: 10, // 每页条数
-                    userId: '',
-                    mobile: ''
+                    // mobile: '',
+                    userId: ''
                 }
             };
         },
@@ -129,6 +129,14 @@
         created() {
             // this.handleSearch();
         },
+        // mounted() {
+        //     var vm = this;
+        //     document.onkeydown = function(e){
+        //         if(e.keyCode == 13){
+        //             vm.handleSearch();
+        //         }
+        //     }
+        // },
         computed: {
             add() {
                 return this.$quanxian("add");

@@ -16,6 +16,14 @@
                 <el-tree :data="this.$store.state.login.menuData" :props="defaultMenuProps" @node-click="handleNodeClick"></el-tree>
             </div>
             <div class="panel-main">
+                <el-tabs v-model="editableTabsValue2" type="card" closable @tab-remove="removeTab" @tab-click='curFn'>
+                    <el-tab-pane v-for="(item, index) in editableTabs2" :key="item.name" :label="item.title" :name="item.name">
+                        {{item.content}}
+                    </el-tab-pane>
+                </el-tabs>
+
+
+
                 <el-row>
                     <el-col :span="24">
                         <div class="panel-top">
@@ -24,7 +32,9 @@
                         </div>
                     </el-col>
                     <el-col :span="24">
-                        <router-view></router-view>
+                        <keep-alive>
+                            <router-view></router-view>
+                        </keep-alive>
                     </el-col>
                 </el-row>
             </div>
@@ -51,9 +61,14 @@
                     label: 'sysresname',
                     link: 'url'
                 },
-
                 username: '',
+                // tab
+                editableTabs2: [],
+                editableTabsValue2: null,
+
             }
+
+
         },
         watch: {
             '$route' (to, from) { //监听路由改变
@@ -78,22 +93,72 @@
             const windowH = document.documentElement.clientHeight;
             // panelAside.style.height = windowH + "px";
             const pathRouter = this.$router.history.current.fullPath;
-            if (localStorage.getItem("title") &&pathRouter!='/') {
+            if (localStorage.getItem("title") && pathRouter != '/') {
                 this.currentPathName = localStorage.getItem("title");
             }
 
             this.username = this.$store.state.login.username;
 
             this.menuFn();
+            this.editableTabsValue2 = this.$route.path;
+            this.editableTabs2.push({
+                name: this.$route.path,
+                title: this.$route.name,
+            })
+
+            console.log(this.$route);
+
         },
         methods: {
-            handleNodeClick(data, e, n) {
-                // console.log(data.url);
+            curFn(e) {
+                // console.log(e)
+                this.$router.push({
+                    path: e.name
+                });
+            },
 
+            removeTab(targetName) {
+
+                let tabs = this.editableTabs2;
+                let activeName = this.editableTabsValue2;
+                if (activeName === targetName) {
+                    tabs.forEach((tab, index) => {
+                        if (tab.name === targetName) {
+                            let nextTab = tabs[index + 1] || tabs[index - 1];
+                            if (nextTab) {
+                                activeName = nextTab.name;
+                            }
+                        }
+                    });
+                }
+                this.editableTabsValue2 = activeName;
+                // 路由删除的时候跳转页面
+                this.$router.push({
+                    path: activeName
+                });
+                // 
+                this.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
+            },
+
+
+            handleNodeClick(data, e, n) {
+                let vm = this;
                 if (data.url) {
+                    this.editableTabsValue2 = data.url;
                     this.$router.push({
                         path: data.url
                     });
+                    for (let i = 0; i < this.editableTabs2.length; i++) {
+                        if (this.editableTabs2[i].title == data.sysresname) {
+                            return
+                        }
+                    }
+
+                    vm.editableTabs2.push({
+                        name: data.url,
+                        title: data.sysresname,
+                    })
+
                 }
             },
             handleRemove(tab) {
@@ -134,10 +199,12 @@
                                 for (let c = 0; c < data[i].children.length; c++) {
                                     for (let j = 0; j < data[i].children[c].children.length; j++) {
                                         let pArr = [];
-                                        for(let a= 0; a<data[i].children[c].children[j].aSystemFunctions.length;a++){
-                                            pArr.push(data[i].children[c].children[j].aSystemFunctions[a].operatecode)
+                                        for (let a = 0; a < data[i].children[c].children[j].aSystemFunctions
+                                            .length; a++) {
+                                            pArr.push(data[i].children[c].children[j].aSystemFunctions[
+                                                a].operatecode)
                                             func[data[i].children[c].children[j].url] = pArr;
-                                        }                               
+                                        }
                                     }
                                 }
                             };

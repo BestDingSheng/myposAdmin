@@ -48,6 +48,7 @@
   "dependencies": {
     "clean-webpack-plugin": "^0.1.17",
     "node-sass": "^4.5.3",
-    "vue": "^2.4.4"
+    "vue": "^2.4.4",
+    "vue-json-editor": "^1.2.1"
   }
 }

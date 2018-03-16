@@ -189,10 +189,10 @@
             var vm = this;
             vm.setMaxDate = Date.now();
             vm.pickerOptions0.onPick = function(pickDate){
-                // console.log(pickDate.minDate);
+                // if((pickDate.maxDate));
                 let month = 30 * 24 * 3600 * 1000;
                 vm.setMaxDate = pickDate.minDate.getTime() + month
-                if(vm.setMaxDate > Date.now()){
+                if(vm.setMaxDate > Date.now() || pickDate.maxDate){
                     vm.setMaxDate = Date.now();
                 }
             },

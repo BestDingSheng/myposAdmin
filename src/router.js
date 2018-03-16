@@ -36,6 +36,11 @@ import transSettlement from './view/ywgl/transSettlement.vue'
 import modifyMerName from './view/ywgl/modifyMerName.vue'
 import bmdgl from './view/ywgl/bmdgl.vue'
 import merRegInfo from './view/ywgl/merRegInfo.vue'
+import supportBankMgmt from './view/ywgl/supportBankMgmt.vue'
+import qzzd from './view/ywgl/qzzd.vue' 
+import d0AbnormalRedo from './view/ywgl/d0AbnormalRedo.vue'
+
+
 
 // pasm 管理 
 import devOfD0ChangeLog from './view/psamgl/devOfD0ChangeLog.vue'
@@ -92,10 +97,15 @@ const routes = [{
             },
             //  业务管理
             {
+                name: '前置字典',
+                path: '/ywgl/qzzd',
+                component: qzzd
+            },
+            {
                 name: '终端白名单管理',
                 path: '/ywgl/bmdgl',
                 component: bmdgl
-            },           
+            },
             {
                 name: 'Mpos黑名单数据字典管理',
                 path: '/ywgl/hmdgl',
@@ -203,6 +213,8 @@ const routes = [{
                 path: '/htgl/cdgl',
                 component: cdgl
             },
+
+            // 用户管理
             {
                 name: '信息验证',
                 path: '/ywgl/infoCheck',
@@ -251,6 +263,14 @@ const routes = [{
                 name: '商户注册日志',
                 path: '/ywgl/merRegInfo',
                 component: merRegInfo
+            }, {
+                name: '支持银行列表',
+                path: '/ywgl/supportBankMgmt',
+                component: supportBankMgmt
+            }, {
+                name: 'D0异常重发',
+                path: '/ywgl/d0AbnormalRedo',
+                component: d0AbnormalRedo
             }
         ]
     },

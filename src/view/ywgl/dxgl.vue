@@ -232,7 +232,7 @@
             },
             handlePreview(file) {
                 console.log(file);
-                alert(file);
+               
             },
             sucMsg(msg) { // 成功信息
                 var vm = this;

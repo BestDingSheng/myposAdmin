@@ -4,18 +4,12 @@
         <el-row>
             <el-col :span="24" class="toolbar">
                 <el-form :inline="true" :model="searchData" label-width='120px' ref="searchForm">
-                    <el-form-item :show-message='false' label="商户号" prop="shopNo" required>
+                    <el-form-item :show-message='false' label="商户号" prop="shopNo" :required="true">
                         <el-input v-model="searchData.shopNo" placeholder="请输入商户号"></el-input>
                     </el-form-item>
-                    <el-form-item :show-message='false' label="起止日期" prop="date" required>
+                    <el-form-item :show-message='false' label="起止日期" prop="date" :required="true">
                         <el-date-picker v-model="searchData.date" @change='dealDate' format='yyyyMMdd' type="daterange" placeholder="选择日期范围">
                         </el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="平台" prop="platform">
-                        <el-select v-model="searchData.platform" placeholder="请选择平台来源">
-                            <el-option label="清结算" :value="2"></el-option>
-                            <!-- <el-option label="D0" :value="2"></el-option> -->
-                        </el-select>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -73,7 +67,6 @@
                     currentPage: 1, // 当前页码
                     pageSize: 10, // 每页条数
                     shopNo: '',
-                    platform: '',
                     date: [],
                     retrDateStart: '',
                     retrDateEnd: ''

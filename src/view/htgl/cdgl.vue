@@ -193,7 +193,9 @@
 
                             <el-row>
                                 <el-col :span="6">
-                                    <div class="pull-left title"><span>ID</span></div>
+                                    <div class="pull-left title">
+                                        <span>ID</span>
+                                    </div>
                                 </el-col>
                                 <el-col :span="12">
                                     <div class="pull-left content">
@@ -204,7 +206,9 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="6">
-                                    <div class="pull-left title"><span>菜单名称</span></div>
+                                    <div class="pull-left title">
+                                        <span>菜单名称</span>
+                                    </div>
                                 </el-col>
                                 <el-col :span="12">
                                     <div class="pull-left content">
@@ -215,7 +219,9 @@
 
                             <el-row>
                                 <el-col :span="6">
-                                    <div class="pull-left title"><span>URL</span></div>
+                                    <div class="pull-left title">
+                                        <span>URL</span>
+                                    </div>
                                 </el-col>
                                 <el-col :span="12">
                                     <div class="pull-left content">
@@ -245,8 +251,8 @@
                                 <el-table-column align="center" prop="operatename" label="操作点名称"></el-table-column>
                                 <el-table-column align="center" label="操作" inline-template :context="_self">
                                     <span>
-                                    <el-button @click="focusMenuFuncDel(row,$index)" type="text" size="small">删除</el-button>
-                                </span>
+                                        <el-button @click="focusMenuFuncDel(row,$index)" type="text" size="small">删除</el-button>
+                                    </span>
                                 </el-table-column>
                             </el-table>
                         </el-card>
@@ -257,8 +263,8 @@
                                 <el-table-column align="center" prop="operatename" label="操作点名称"></el-table-column>
                                 <el-table-column align="center" label="操作" inline-template :context="_self">
                                     <span>
-                                    <el-button type="text" size="small" @click="focusMenuFuncAdd(row)">添加</el-button>
-                                </span>
+                                        <el-button type="text" size="small" @click="focusMenuFuncAdd(row)">添加</el-button>
+                                    </span>
                                 </el-table-column>
                             </el-table>
                         </el-card>
@@ -370,50 +376,18 @@
         },
         computed: {
 
-            add() {
-                if (this.$store.state.login.permissions["/htgl/cdgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/cdgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/cdgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'add') {
-                            return true;
-                        }
-                    }
-                }
-            },
-            del() {
-                if (this.$store.state.login.permissions["/htgl/cdgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/cdgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/cdgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'delete') {
-                            return true;
-                        }
-                    }
-                }
-            },
-            update() {
-                if (this.$store.state.login.permissions["/htgl/cdgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/cdgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/cdgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'update') {
-                            return true;
-                        }
-                    }
-                }
-            },
-            view() {
-                if (this.$store.state.login.permissions["/htgl/cdgl"]) {
-                    // return this.$store.state.login.permissions["/htgl/cdgl"].add;
-                    let bbglPage = this.$store.state.login.permissions["/htgl/cdgl"];
-                    for (let i = 0; i < bbglPage.length; i++) {
-                        if (bbglPage[i] == 'view') {
-                            return true;
-                        }
-                    }
-                }
-            }
+            // add() {
+            //     return this.$quanxian('add')
+            // },
+            // del() {
+            //     return this.$quanxian('delete')
+            // },
+            // update() {
+            //     return this.$quanxian('update')
+            // },
+            // view() {
+            //     return this.$quanxian('view')
+            // },
         },
         methods: {
             errMsg(msg) { // 失败信息
@@ -611,7 +585,8 @@
             },
             menuInfoSave() {
                 var vm = this;
-                this.$http.post("http://" + vm.$store.state.common.server + "/managerBam/resource/updateAuthSystemResource",
+                this.$http.post("http://" + vm.$store.state.common.server +
+                    "/managerBam/resource/updateAuthSystemResource",
                     qs.stringify(
                         vm.focusMenuBaseInfoData
                     )).then(function (res) {

@@ -870,7 +870,7 @@
 
             },
             alertfn() {
-                alert('成功');
+
             },
             findFn(callback) {
                 console.log(this.addForm.directbusno)
